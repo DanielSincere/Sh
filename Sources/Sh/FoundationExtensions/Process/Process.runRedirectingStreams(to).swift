@@ -3,7 +3,7 @@ import Foundation
 extension Process {
   
   public func runRedirectingStreams(to sink: Sink) throws {
-    try self.redirectAllOutput(to: sink)
+    try self.redirectStreams(to: sink)
     try self.run()
     self.waitUntilExit()
     if let terminationError = terminationError {
@@ -14,7 +14,7 @@ extension Process {
   public func runRedirectingStreams(to sink: Sink) async throws {
     try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
       do {
-        try self.redirectAllOutput(to: sink)
+        try self.redirectStreams(to: sink)
       } catch {
         continuation.resume(throwing: error)
         return
@@ -36,7 +36,7 @@ extension Process {
     }
   }
   
-  private func redirectAllOutput(to sink: Sink) throws {
+  private func redirectStreams(to sink: Sink) throws {
     switch sink {
     case .terminal:
       self.redirectAllOutputToTerminal()
