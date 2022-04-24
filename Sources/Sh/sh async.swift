@@ -1,18 +1,10 @@
-/// sh.swift
-///
-/// Public functions for general use.
-///
-/// For quiet versions of these functions, see `shq.swift`
-///
-/// For async versions of these functions, see `sh async.swift`
-
+/// `async`/`await` versions of functions in `sh.swift`
 
 import Foundation
 import FoundationExtensions
-import Rainbow
 
 /// Run a shell command. Useful for obtaining small bits of output
-/// from a shell program
+/// from a shell program with `async`/`await`.
 ///
 /// Announces the command it is about to execute. To run quietly,
 /// use `shq`
@@ -26,11 +18,10 @@ import Rainbow
 /// Returns:
 /// - `String` of whatever is in the standard output buffer.
 ///     Uses `.trimmingCharacters(in: .whitespacesAndNewlines)`
-///
 public func sh(_ cmd: String,
                environment: [String: String] = [:],
-               workingDirectory: String? = nil) throws -> String? {
-  try
+               workingDirectory: String? = nil) async throws -> String? {
+  try await
   InternalRepresetation(announcer: .init(),
                         cmd: cmd,
                         environment: environment,
@@ -38,14 +29,21 @@ public func sh(_ cmd: String,
   .runReturningTrimmedString()
 }
 
-/// Run a shell command, and parse the output as JSON
+/// Run a shell command, and parse the output as JSON. `Async`/`await` version
 ///
+/// Arguments
+/// - `type` Decodable type to decode
+/// - `using` JSONDecoder to use. Creates a new one by default
+/// - `cmd` the shell command to run
+/// - `environment` a dictionary of enviroment variables to merge
+///     with the enviroment of the current `Process`
+/// - `workingDirectory` the directory where to run the command
 public func sh<D: Decodable>(_ type: D.Type,
                              using jsonDecoder: JSONDecoder = .init(),
                              _ cmd: String,
                              environment: [String: String] = [:],
-                             workingDirectory: String? = nil) throws -> D {
-  try
+                             workingDirectory: String? = nil) async throws -> D {
+  try await
   InternalRepresetation(announcer: .init(),
                         cmd: cmd,
                         environment: environment,
@@ -53,6 +51,8 @@ public func sh<D: Decodable>(_ type: D.Type,
   .runDecoding(type, using: jsonDecoder)
 }
 
+
+/// `Async`/`await` version
 /// Run a shell command, sending output to the terminal or a file.
 /// Useful for long running shell commands like `xcodebuild`
 ///
@@ -69,8 +69,8 @@ public func sh<D: Decodable>(_ type: D.Type,
 public func sh(_ sink: Sink,
                _ cmd: String,
                environment: [String: String] = [:],
-               workingDirectory: String? = nil) throws { 
-  try
+               workingDirectory: String? = nil) async throws {
+  try await
   InternalRepresetation(announcer: .init(),
                         cmd: cmd,
                         environment: environment,

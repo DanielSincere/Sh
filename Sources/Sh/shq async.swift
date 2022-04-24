@@ -1,16 +1,10 @@
-/// shq.swift
-///
-/// Public functions for general use.
-///
-/// These are the quiet versions of the functions in `sh.swift`.
-///
-/// For `async`/`await` versions, see `shq async.swift`
-
+/// `async`/`await` versions of functions in `shq.swift`
+/// 
 import Foundation
 import FoundationExtensions
 
 /// Run a shell command. Useful for obtaining small bits of output
-/// from a shell program
+/// from a shell program with `async`/`await` 
 ///
 /// Does not announce the command it is about to execute.
 /// To get an announcement, use `sh`
@@ -23,12 +17,12 @@ import FoundationExtensions
 ///
 /// Returns:
 /// - `String?` of whatever is in the standard output buffer.
-///     Calls `.trimmingCharacters(in: .whitespacesAndNewlines)` 
+///     Calls `.trimmingCharacters(in: .whitespacesAndNewlines)`
 ///
 public func shq(_ cmd: String,
                 environment: [String: String] = [:],
-                workingDirectory: String? = nil) throws -> String?  {
-  try
+                workingDirectory: String? = nil) async throws -> String?  {
+  try await
   InternalRepresetation(announcer: nil,
                         cmd: cmd,
                         environment: environment,
@@ -36,14 +30,15 @@ public func shq(_ cmd: String,
   .runReturningTrimmedString()
 }
 
-/// Run a shell command, and parse the output as JSON
+
+/// Asynchronously, run a shell command, and parse the output as JSON
 ///
 public func shq<D: Decodable>(_ type: D.Type,
                               using jsonDecoder: JSONDecoder = .init(),
                               _ cmd: String,
-                             environment: [String: String] = [:],
-                             workingDirectory: String? = nil) throws -> D {
-  try
+                              environment: [String: String] = [:],
+                              workingDirectory: String? = nil) async throws -> D {
+  try await
   InternalRepresetation(announcer: nil,
                         cmd: cmd,
                         environment: environment,
@@ -51,27 +46,16 @@ public func shq<D: Decodable>(_ type: D.Type,
   .runDecoding(type, using: jsonDecoder)
 }
 
-/// Run a shell command, sending output to the terminal or a file.
-/// Useful for long running shell commands like `xcodebuild`
-///
-/// Does not announce the command it is about to execute.
-/// To get an announcement, use `sh`
-///
-/// Arguments:
-/// - `sink` where to redirect output to, either `.terminal` or `.file(path)`
-/// - `cmd` the shell command to run
-/// - `environment` a dictionary of enviroment variables to merge
-///     with the enviroment of the current `Process`
-/// - `workingDirectory` the directory where to run the command
-///
+/// Asynchronously, run a shell command, and redirect the output
+/// to the specified `Sink`
 public func shq(_ sink: Sink,
                 _ cmd: String,
                 environment: [String: String] = [:],
-                workingDirectory: String? = nil) throws {
-  try
+                workingDirectory: String? = nil) async throws {
+  try await
   InternalRepresetation(announcer: nil,
                         cmd: cmd,
                         environment: environment,
                         workingDirectory: workingDirectory)
-    .runRedirectingAllOutput(to: sink)
+  .runRedirectingAllOutput(to: sink)
 }
