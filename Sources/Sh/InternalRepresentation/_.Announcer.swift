@@ -1,3 +1,4 @@
+import Rainbow
 import Foundation
 
 extension InternalRepresentation {
