@@ -1,6 +1,6 @@
 import Foundation
 
-extension InternalRepresetation {
+extension InternalRepresentation {
   
   func runRedirectingAllOutput(to sink: Sink) throws {
     announcer?.runRedirectingAllOutput(to: sink, params.cmd)

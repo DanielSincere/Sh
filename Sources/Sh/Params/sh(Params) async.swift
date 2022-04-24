@@ -17,7 +17,7 @@ import Foundation
 ///     Uses `.trimmingCharacters(in: .whitespacesAndNewlines)`
 public func sh(_ params: Params) async throws -> String? {
   try await
-  InternalRepresetation(announcer: .init(),
+  InternalRepresentation(announcer: .init(),
                         params: params)
   .runReturningTrimmedString()
 }
@@ -35,7 +35,7 @@ public func sh<D: Decodable>(_ type: D.Type,
                              using jsonDecoder: JSONDecoder = .init(),
                              _ params: Params) async throws -> D {
   try await
-  InternalRepresetation(announcer: .init(),
+  InternalRepresentation(announcer: .init(),
                         params: params)
   .runDecoding(type, using: jsonDecoder)
 }
@@ -58,7 +58,7 @@ public func sh<D: Decodable>(_ type: D.Type,
 public func sh(_ sink: Sink,
                _ params: Params) async throws {
   try await
-  InternalRepresetation(announcer: .init(),
+  InternalRepresentation(announcer: .init(),
                         params: params)
   .runRedirectingAllOutput(to: sink)
 }

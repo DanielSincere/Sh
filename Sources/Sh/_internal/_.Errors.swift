@@ -1,6 +1,6 @@
 import Foundation
 
-extension InternalRepresetation {
+extension InternalRepresentation {
   public enum Errors: Error, LocalizedError {
     case unexpectedNilDataError
     

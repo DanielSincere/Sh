@@ -27,7 +27,7 @@ import Rainbow
 ///
 public func sh(_ params: Params) throws -> String? {
   try
-  InternalRepresetation(announcer: .init(),
+  InternalRepresentation(announcer: .init(),
                         params: params)
   .runReturningTrimmedString()
 }
@@ -38,7 +38,7 @@ public func sh<D: Decodable>(_ type: D.Type,
                              using jsonDecoder: JSONDecoder = .init(),
                              _ params: Params) throws -> D {
   try
-  InternalRepresetation(announcer: .init(),
+  InternalRepresentation(announcer: .init(),
                         params: params)
   .runDecoding(type, using: jsonDecoder)
 }
@@ -59,7 +59,7 @@ public func sh<D: Decodable>(_ type: D.Type,
 public func sh(_ sink: Sink,
                _ params: Params) throws {
   try
-  InternalRepresetation(announcer: .init(),
+  InternalRepresentation(announcer: .init(),
                         params: params)
   .runRedirectingAllOutput(to: sink)
 }

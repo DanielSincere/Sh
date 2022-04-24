@@ -28,7 +28,7 @@ public func shq(_ cmd: String,
                 environment: [String: String] = [:],
                 workingDirectory: String? = nil) throws -> String?  {
   try
-  InternalRepresetation(announcer: nil,
+  InternalRepresentation(announcer: nil,
                         cmd: cmd,
                         environment: environment,
                         workingDirectory: workingDirectory)
@@ -43,7 +43,7 @@ public func shq<D: Decodable>(_ type: D.Type,
                              environment: [String: String] = [:],
                              workingDirectory: String? = nil) throws -> D {
   try
-  InternalRepresetation(announcer: nil,
+  InternalRepresentation(announcer: nil,
                         cmd: cmd,
                         environment: environment,
                         workingDirectory: workingDirectory)
@@ -68,7 +68,7 @@ public func shq(_ sink: Sink,
                 environment: [String: String] = [:],
                 workingDirectory: String? = nil) throws {
   try
-  InternalRepresetation(announcer: nil,
+  InternalRepresentation(announcer: nil,
                         cmd: cmd,
                         environment: environment,
                         workingDirectory: workingDirectory)

@@ -1,6 +1,6 @@
 import Foundation
 
-extension InternalRepresetation {
+extension InternalRepresentation {
   
   func runDecoding<D: Decodable>(_ type: D.Type, using jsonDecoder: JSONDecoder = .init()) throws -> D {
     announcer?.runDecoding(type, params.cmd)

@@ -26,7 +26,7 @@ import Foundation
 ///
 public func shq(_ params: Params) throws -> String?  {
   try
-  InternalRepresetation(announcer: nil,
+  InternalRepresentation(announcer: nil,
                         params: params)
   .runReturningTrimmedString()
 }
@@ -37,7 +37,7 @@ public func shq<D: Decodable>(_ type: D.Type,
                               using jsonDecoder: JSONDecoder = .init(),
                               _ params: Params) throws -> D {
   try
-  InternalRepresetation(announcer: nil,
+  InternalRepresentation(announcer: nil,
                         params: params)
   .runDecoding(type, using: jsonDecoder)
 }
@@ -58,7 +58,7 @@ public func shq<D: Decodable>(_ type: D.Type,
 public func shq(_ sink: Sink,
                 _ params: Params) throws {
   try
-  InternalRepresetation(announcer: nil,
+  InternalRepresentation(announcer: nil,
                         params: params)
   .runRedirectingAllOutput(to: sink)
 }

@@ -1,11 +1,11 @@
 import Foundation
 
-struct InternalRepresetation {
+struct InternalRepresentation {
   let announcer: Announcer?
   let params: Params
 }
 
-extension InternalRepresetation {
+extension InternalRepresentation {
   init(announcer: Announcer?,
        cmd: String,
        environment: [String: String],

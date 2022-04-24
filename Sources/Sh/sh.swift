@@ -29,7 +29,7 @@ public func sh(_ cmd: String,
                environment: [String: String] = [:],
                workingDirectory: String? = nil) throws -> String? {
   try
-  InternalRepresetation(announcer: .init(),
+  InternalRepresentation(announcer: .init(),
                         cmd: cmd,
                         environment: environment,
                         workingDirectory: workingDirectory)
@@ -44,7 +44,7 @@ public func sh<D: Decodable>(_ type: D.Type,
                              environment: [String: String] = [:],
                              workingDirectory: String? = nil) throws -> D {
   try
-  InternalRepresetation(announcer: .init(),
+  InternalRepresentation(announcer: .init(),
                         cmd: cmd,
                         environment: environment,
                         workingDirectory: workingDirectory)
@@ -69,7 +69,7 @@ public func sh(_ sink: Sink,
                environment: [String: String] = [:],
                workingDirectory: String? = nil) throws { 
   try
-  InternalRepresetation(announcer: .init(),
+  InternalRepresentation(announcer: .init(),
                         cmd: cmd,
                         environment: environment,
                         workingDirectory: workingDirectory)

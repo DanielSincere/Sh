@@ -1,6 +1,6 @@
 import Foundation
 
-extension InternalRepresetation {
+extension InternalRepresentation {
   struct Announcer {
     
     func runReturningTrimmedString(_ cmd: String) {
@@ -32,7 +32,7 @@ extension InternalRepresetation {
   }
 }
 
-private extension InternalRepresetation.Announcer {
+private extension InternalRepresentation.Announcer {
   func announce(_ text: String) {
     ("[Sh] ".blue + text + "\n")
       .data(using: .utf8)

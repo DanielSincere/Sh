@@ -1,6 +1,6 @@
 import Foundation
 
-extension InternalRepresetation {
+extension InternalRepresentation {
   
   func runReturningAllOutput() throws -> Process.AllOutput {
     announcer?.runReturningAllOutput(params.cmd)

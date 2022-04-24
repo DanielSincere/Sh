@@ -1,6 +1,6 @@
 import Foundation
 
-extension InternalRepresetation {
+extension InternalRepresentation {
   
   func runReturningTrimmedString() throws -> String? {
     announcer?.runReturningTrimmedString(params.cmd)
