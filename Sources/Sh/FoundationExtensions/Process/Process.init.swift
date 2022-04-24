@@ -11,7 +11,12 @@ extension Process {
       self.currentDirectoryURL = URL(fileURLWithPath: workingDirectory)
     }
   }
-
+  
+  public convenience init(_ params: Params) {
+    self.init(cmd: params.cmd,
+              environment: params.environment,
+              workingDirectory: params.workingDirectory)
+  }
 }
 
 private extension Dictionary where Key == String, Value == String {

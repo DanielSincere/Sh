@@ -16,11 +16,3 @@ public struct Params {
     self.workingDirectory = workingDirectory
   }
 }
-
-extension Process {
-  public convenience init(_ params: Params) {
-    self.init(cmd: params.cmd,
-              environment: params.environment,
-              workingDirectory: params.workingDirectory)
-  }
-}
