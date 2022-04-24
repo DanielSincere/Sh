@@ -37,7 +37,7 @@ final class ReturningOutputTests: XCTestCase {
   func testNilOrEmptyOutputThrowsErrorWhenDecoding() {
     do {
       let _ = try sh([Int].self, "echo")
-    } catch Errors.unexpectedNilDataError {
+    } catch InternalRepresetation.Errors.unexpectedNilDataError {
       // success
     } catch Swift.DecodingError.dataCorrupted(_) {
       // success
