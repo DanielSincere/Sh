@@ -14,7 +14,6 @@ let package = Package(
     .package(url: "https://github.com/onevcat/Rainbow", from: "4.0.0"),
   ],
   targets: [
-    .target(name: "Sh", dependencies: ["Rainbow", "FoundationExtensions"]),
-    .target(name: "FoundationExtensions", dependencies: []),
+    .target(name: "Sh", dependencies: ["Rainbow"]),
     .testTarget(name: "ShTests", dependencies: ["Sh"]),
   ])

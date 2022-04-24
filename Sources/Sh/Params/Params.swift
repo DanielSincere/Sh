@@ -1,5 +1,4 @@
 import Foundation
-import FoundationExtensions
 
 /// A `Params` struct reprensents the parameters to execute a shell command
 /// - `cmd` the shell command to run

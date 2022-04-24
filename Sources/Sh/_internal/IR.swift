@@ -1,5 +1,4 @@
 import Foundation
-import FoundationExtensions
 
 struct InternalRepresetation {
   let announcer: Announcer?

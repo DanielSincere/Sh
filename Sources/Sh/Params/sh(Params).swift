@@ -6,9 +6,7 @@
 ///
 /// For async versions of these functions, see `sh(Params) async.swift`
 
-
 import Foundation
-import FoundationExtensions
 import Rainbow
 
 /// Run a shell command. Useful for obtaining small bits of output

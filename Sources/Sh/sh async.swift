@@ -1,7 +1,6 @@
 /// `async`/`await` versions of functions in `sh.swift`
 
 import Foundation
-import FoundationExtensions
 
 /// Run a shell command. Useful for obtaining small bits of output
 /// from a shell program with `async`/`await`.

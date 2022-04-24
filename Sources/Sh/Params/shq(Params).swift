@@ -7,7 +7,6 @@
 /// For `async`/`await` versions, see `shq(Params) async.swift`
 
 import Foundation
-import FoundationExtensions
 
 /// Run a shell command. Useful for obtaining small bits of output
 /// from a shell program
