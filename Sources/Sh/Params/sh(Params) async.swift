@@ -60,5 +60,5 @@ public func sh(_ sink: Sink,
   try await
   InternalRepresentation(announcer: .init(),
                         params: params)
-  .runRedirectingAllOutput(to: sink)
+  .runRedirectingStreams(to: sink)
 }

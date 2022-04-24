@@ -72,5 +72,5 @@ public func shq(_ sink: Sink,
                         cmd: cmd,
                         environment: environment,
                         workingDirectory: workingDirectory)
-    .runRedirectingAllOutput(to: sink)
+    .runRedirectingStreams(to: sink)
 }

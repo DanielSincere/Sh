@@ -10,6 +10,9 @@ extension InternalRepresentation {
        cmd: String,
        environment: [String: String],
        workingDirectory: String?) {
-    self.init(announcer: announcer, params: .init(cmd, environment: environment, workingDirectory: workingDirectory))
+    self.init(announcer: announcer,
+              params: Params(cmd,
+                             environment: environment,
+                             workingDirectory: workingDirectory))
   }
 }

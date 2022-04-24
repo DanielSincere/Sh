@@ -44,5 +44,5 @@ public func shq(_ sink: Sink,
   try await
   InternalRepresentation(announcer: nil,
                         params: params)
-  .runRedirectingAllOutput(to: sink)
+  .runRedirectingStreams(to: sink)
 }

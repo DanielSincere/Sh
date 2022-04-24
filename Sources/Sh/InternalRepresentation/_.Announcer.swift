@@ -19,7 +19,7 @@ extension InternalRepresentation {
       announce("Running `\(cmd)`, returning raw data")
     }
     
-    func runRedirectingAllOutput(to sink: Sink, _ cmd: String) {
+    func runRedirectingStreams(to sink: Sink, _ cmd: String) {
       switch sink {
       case .terminal:
         announce("Running `\(cmd)`")
