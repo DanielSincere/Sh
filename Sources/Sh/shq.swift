@@ -25,52 +25,56 @@ import FoundationExtensions
 public func shq(_ cmd: String,
                 environment: [String: String] = [:],
                 workingDirectory: String? = nil) throws -> String?  {
-  return try Process(cmd: cmd, environment: environment, workingDirectory: workingDirectory)
-    .runReturningData()?
-    .asTrimmedString()
+  try
+  InternalRepresetation(announcer: nil,
+                        cmd: cmd,
+                        environment: environment,
+                        workingDirectory: workingDirectory)
+  .runReturningTrimmedString()
 }
 
 public func shq(_ cmd: String,
                 environment: [String: String] = [:],
                 workingDirectory: String? = nil) async throws -> String?  {
-  return try await Process(cmd: cmd, environment: environment, workingDirectory: workingDirectory)
-    .runReturningData()?
-    .asTrimmedString()
+  try
+  await
+  InternalRepresetation(announcer: nil,
+                        cmd: cmd,
+                        environment: environment,
+                        workingDirectory: workingDirectory)
+  .runReturningTrimmedString()
 }
 
 
 /// Run a shell command, and parse the output as JSON
 ///
 public func shq<D: Decodable>(_ type: D.Type,
+                              using jsonDecoder: JSONDecoder = .init(),
                               _ cmd: String,
                              environment: [String: String] = [:],
                              workingDirectory: String? = nil) throws -> D {
-  let decoded = try Process(cmd: cmd, environment: environment, workingDirectory: workingDirectory)
-    .runReturningData()?
-    .asJSON(decoding: type)
-  
-  if let decoded = decoded {
-    return decoded
-  } else {
-    throw Errors.unexpectedNilDataError
-  }
+  try
+  InternalRepresetation(announcer: nil,
+                        cmd: cmd,
+                        environment: environment,
+                        workingDirectory: workingDirectory)
+  .runDecoding(type, using: jsonDecoder)
 }
 
 /// Asynchronously, run a shell command, and parse the output as JSON
 ///
 public func shq<D: Decodable>(_ type: D.Type,
+                              using jsonDecoder: JSONDecoder = .init(),
                               _ cmd: String,
                              environment: [String: String] = [:],
                              workingDirectory: String? = nil) async throws -> D {
-  let decoded = try await Process(cmd: cmd, environment: environment, workingDirectory: workingDirectory)
-    .runReturningData()?
-    .asJSON(decoding: type)
-  
-  if let decoded = decoded {
-    return decoded
-  } else {
-    throw Errors.unexpectedNilDataError
-  }
+  try
+  await
+  InternalRepresetation(announcer: nil,
+                        cmd: cmd,
+                        environment: environment,
+                        workingDirectory: workingDirectory)
+  .runDecoding(type, using: jsonDecoder)
 }
 
 /// Run a shell command, sending output to the terminal or a file.
@@ -90,7 +94,11 @@ public func shq(_ sink: Sink,
                 _ cmd: String,
                 environment: [String: String] = [:],
                 workingDirectory: String? = nil) throws {
-  try Process(cmd: cmd, environment: environment, workingDirectory: workingDirectory)
+  try
+  InternalRepresetation(announcer: nil,
+                        cmd: cmd,
+                        environment: environment,
+                        workingDirectory: workingDirectory)
     .runRedirectingAllOutput(to: sink)
 }
 
@@ -98,6 +106,11 @@ public func shq(_ sink: Sink,
                 _ cmd: String,
                 environment: [String: String] = [:],
                 workingDirectory: String? = nil) async throws {
-  try await Process(cmd: cmd, environment: environment, workingDirectory: workingDirectory)
+  try
+  await
+  InternalRepresetation(announcer: nil,
+                        cmd: cmd,
+                        environment: environment,
+                        workingDirectory: workingDirectory)
     .runRedirectingAllOutput(to: sink)
 }

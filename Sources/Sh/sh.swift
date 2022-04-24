@@ -26,21 +26,24 @@ import Rainbow
 public func sh(_ cmd: String,
                environment: [String: String] = [:],
                workingDirectory: String? = nil) throws -> String? {
-  try InternalRepresetation(announcer: .init(),
-                            cmd: cmd,
-                            environment: environment,
-                            workingDirectory: workingDirectory)
-    .runReturningTrimmedString()
+  try
+  InternalRepresetation(announcer: .init(),
+                        cmd: cmd,
+                        environment: environment,
+                        workingDirectory: workingDirectory)
+  .runReturningTrimmedString()
 }
 
 /// `Async`/`await` version
 public func sh(_ cmd: String,
                environment: [String: String] = [:],
                workingDirectory: String? = nil) async throws -> String? {
-  try await InternalRepresetation(announcer: .init(),
-                            cmd: cmd,
-                            environment: environment,
-                            workingDirectory: workingDirectory)
+  try
+  await
+  InternalRepresetation(announcer: .init(),
+                        cmd: cmd,
+                        environment: environment,
+                        workingDirectory: workingDirectory)
   .runReturningTrimmedString()
 }
 
@@ -48,25 +51,31 @@ public func sh(_ cmd: String,
 /// Run a shell command, and parse the output as JSON
 ///
 public func sh<D: Decodable>(_ type: D.Type,
+                             using jsonDecoder: JSONDecoder = .init(),
                              _ cmd: String,
                              environment: [String: String] = [:],
-                             workingDirectory: String? = nil,
-                             using jsonDecoder: JSONDecoder = .init()) throws -> D {
-  try InternalRepresetation(announcer: .init(),
-                            cmd: cmd,
-                            environment: environment,
-                            workingDirectory: workingDirectory)
+                             workingDirectory: String? = nil) throws -> D {
+  try
+  InternalRepresetation(announcer: .init(),
+                        cmd: cmd,
+                        environment: environment,
+                        workingDirectory: workingDirectory)
   .runDecoding(type, using: jsonDecoder)
 }
 
 /// `Async`/`await` version
 public func sh<D: Decodable>(_ type: D.Type,
+                             using jsonDecoder: JSONDecoder = .init(),
                              _ cmd: String,
                              environment: [String: String] = [:],
                              workingDirectory: String? = nil) async throws -> D {
-  await announce("Running `\(cmd)`, decoding `\(type)`")
-
-  return try await shq(type, cmd, environment: environment, workingDirectory: workingDirectory)
+  try
+  await
+  InternalRepresetation(announcer: .init(),
+                        cmd: cmd,
+                        environment: environment,
+                        workingDirectory: workingDirectory)
+  .runDecoding(type, using: jsonDecoder)
 }
 
 
@@ -87,17 +96,13 @@ public func sh(_ sink: Sink,
                _ cmd: String,
                environment: [String: String] = [:],
                workingDirectory: String? = nil) throws {
-
-  switch sink {
-  case .terminal:
-    announce("Running `\(cmd)`")
-  case .file(let path):
-    announce("Running `\(cmd)`, logging to `\(path.blue)`")
-  case .null:
-    announce("Running `\(cmd)`, discarding output")
-  }
-
-  try shq(sink, cmd, environment: environment, workingDirectory: workingDirectory)
+  
+  try
+  InternalRepresetation(announcer: .init(),
+                        cmd: cmd,
+                        environment: environment,
+                        workingDirectory: workingDirectory)
+  .runRedirectingAllOutput(to: sink)
 }
 
 /// `Async`/`await` version
@@ -106,29 +111,11 @@ public func sh(_ sink: Sink,
                environment: [String: String] = [:],
                workingDirectory: String? = nil) async throws {
 
-  switch sink {
-  case .terminal:
-    await announce("Running `\(cmd)`")
-  case .file(let path):
-    await announce("Running `\(cmd)`, logging to `\(path.blue)`")
-  case .null:
-    await announce("Running `\(cmd)`, discarding output")
-  }
-
-  try await shq(sink, cmd, environment: environment, workingDirectory: workingDirectory)
-}
-
-private func announce(_ text: String) {
-  ("[Sh] ".blue + text + "\n")
-    .data(using: .utf8)
-    .map(FileHandle.standardError.write)
-}
-
-private func announce(_ text: String) async {
-  await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-    ("[Sh] ".blue + text + "\n")
-      .data(using: .utf8)
-      .map(FileHandle.standardError.write)
-    continuation.resume()
-  }
+  try
+  await
+  InternalRepresetation(announcer: .init(),
+                        cmd: cmd,
+                        environment: environment,
+                        workingDirectory: workingDirectory)
+  .runRedirectingAllOutput(to: sink)
 }
