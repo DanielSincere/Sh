@@ -11,6 +11,7 @@ extension Process {
       self.currentDirectoryURL = URL(fileURLWithPath: workingDirectory)
     }
   }
+
 }
 
 private extension Dictionary where Key == String, Value == String {

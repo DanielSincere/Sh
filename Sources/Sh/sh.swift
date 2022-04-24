@@ -4,6 +4,7 @@
 // For quiet versions of these functions, see `shq.swift`
 
 import Foundation
+import FoundationExtensions
 import Rainbow
 
 /// Run a shell command. Useful for obtaining small bits of output
@@ -25,18 +26,22 @@ import Rainbow
 public func sh(_ cmd: String,
                environment: [String: String] = [:],
                workingDirectory: String? = nil) throws -> String? {
-  announce("Running `\(cmd)`")
-
-  return try shq(cmd, environment: environment, workingDirectory: workingDirectory)
+  try InternalRepresetation(announcer: .init(),
+                            cmd: cmd,
+                            environment: environment,
+                            workingDirectory: workingDirectory)
+    .runReturningTrimmedString()
 }
 
 /// `Async`/`await` version
 public func sh(_ cmd: String,
                environment: [String: String] = [:],
                workingDirectory: String? = nil) async throws -> String? {
-  await announce("Running `\(cmd)`")
-
-  return try await shq(cmd, environment: environment, workingDirectory: workingDirectory)
+  try await InternalRepresetation(announcer: .init(),
+                            cmd: cmd,
+                            environment: environment,
+                            workingDirectory: workingDirectory)
+  .runReturningTrimmedString()
 }
 
 
@@ -45,10 +50,13 @@ public func sh(_ cmd: String,
 public func sh<D: Decodable>(_ type: D.Type,
                              _ cmd: String,
                              environment: [String: String] = [:],
-                             workingDirectory: String? = nil) throws -> D {
-  announce("Running `\(cmd)`, decoding `\(type)`")
-
-  return try shq(type, cmd, environment: environment, workingDirectory: workingDirectory)
+                             workingDirectory: String? = nil,
+                             using jsonDecoder: JSONDecoder = .init()) throws -> D {
+  try InternalRepresetation(announcer: .init(),
+                            cmd: cmd,
+                            environment: environment,
+                            workingDirectory: workingDirectory)
+  .runDecoding(type, using: jsonDecoder)
 }
 
 /// `Async`/`await` version

@@ -1,4 +1,5 @@
 import Foundation
+import FoundationExtensions
 
 struct Announcer {
   
@@ -6,7 +7,7 @@ struct Announcer {
     announce("Running `\(cmd)`, returning trimmed `String`")
   }
   
-  func runDecoding<D>(_ type: D.Type, _ cmd: String) {
+  func runDecoding<D: Decodable>(_ type: D.Type, _ cmd: String) {
     announce("Running `\(cmd)`, decoding `\(type)`")
   }
   
@@ -35,16 +36,5 @@ private extension Announcer {
     ("[Sh] ".blue + text + "\n")
       .data(using: .utf8)
       .map(FileHandle.standardError.write)
-  }
-  
-  func announce(_ text: String) async {
-    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-      ("[Sh] ".blue + text + "\n")
-        .data(using: .utf8)
-        .map(FileHandle.standardError.write)
-      continuation.resume()
-    }
-  }
-  
-  
+  }  
 }
