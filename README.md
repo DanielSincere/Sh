@@ -30,6 +30,42 @@ Here is a simple example, where we ask the shell for the date, formatted as seco
     let timeInterval = try sh(TimeInterval.self, "date +%s")
     let date = Date(timeIntervalSince1970: timeInterval)
     print("The date is \(date).")
+    
+Supposing this was in a script named `Date`, a shell session might look like this:
+
+     % swish Date
+    [Sh] Running `swift package --package-path Swish dump-package`, decoding `SwiftPackageDump`
+    [Swish] Running target named `Date`
+    [Sh] Running `swift run --package-path Swish Date `
+    Fetching https://github.com/FullQueueDeveloper/Sh.git from cache
+    Fetched https://github.com/FullQueueDeveloper/Sh.git (0.24s)
+    Computing version for https://github.com/FullQueueDeveloper/Sh.git
+    Computed https://github.com/FullQueueDeveloper/Sh.git at 1.0.1 (0.37s)
+    Fetching https://github.com/onevcat/Rainbow from cache
+    Fetched https://github.com/onevcat/Rainbow (0.21s)
+    Computed https://github.com/FullQueueDeveloper/Sh.git at 1.0.1 (0.00s)
+    Computing version for https://github.com/onevcat/Rainbow
+    Computed https://github.com/onevcat/Rainbow at 4.0.1 (0.30s)
+    Creating working copy for https://github.com/onevcat/Rainbow
+    Working copy of https://github.com/onevcat/Rainbow resolved at 4.0.1
+    Creating working copy for https://github.com/FullQueueDeveloper/Sh.git
+    Working copy of https://github.com/FullQueueDeveloper/Sh.git resolved at 1.0.1
+    Building for debugging...
+    [29/29] Linking Date
+    Build complete! (4.96s)
+    [Sh] Running `date +%s`, decoding `Double`
+    The date is 2022-08-10 18:08:24 +0000.
+    
+And if all the package have resolved, a shell session might look like this:
+
+     % swish Date
+    [Sh] Running `swift package --package-path Swish dump-package`, decoding `SwiftPackageDump`
+    [Swish] Running target named `Date`
+    [Sh] Running `swift run --package-path Swish Date `
+    Building for debugging...
+    Build complete! (0.08s)
+    [Sh] Running `date +%s`, decoding `Double`
+    The date is 2022-08-10 18:09:53 +0000.
 
 A more substantial example might query `op` or `lpass` for a secret, or query `terraform output` for information about our infrastructure, or query Apple's `agvtool` for Apple version info of our Xcode project.
 
@@ -42,6 +78,7 @@ This file might live in `scripts/Sources/pre-commit/main.swift`. Perhaps we want
 
     try sh(.terminal, "swift test")
     try sh(.file("logs/build.log"), "swift build -c release")
+    
 
 ## Architecture
 
@@ -87,5 +124,6 @@ Yes, Sh supports Swift's `async`/`await`. All methods have a corresponding `asyn
 
 This package by itself does not try to provide a domain specific language for various tools. But there is a growing list of Sh-powered wrappers that offer a nicer API for some command line tools.
 
+- [ShXcrun](https://github.com/FullQueueDeveloper/ShXcrun) for a Sh wrapper around tools shipped with Xcode such as `xcodebuild` and `altool`.
 - [ShGit](https://github.com/FullQueueDeveloper/ShGit) for a Sh wrapper around Git.
 - [Sh1Password](https://github.com/FullQueueDeveloper/Sh1Password) for a Sh wrapper around 1Password's CLI version 2.
