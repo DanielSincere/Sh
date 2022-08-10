@@ -4,6 +4,8 @@ Who wants to use Bash or Ruby scripts to maintain your Swift project? Not me. Le
 
 Sh lets you reason about your script in Swift, easily calling shell commands and using their output in your Swift program. Or when orchestrating a build script, simply redirect all output to the terminal, a log file, or `/dev/null`.
 
+For a full example of leveraging Sh on your iOS project, please see https://github.com/FullQueueDeveloper/SwishExampleiOSProject
+
 ## Motivation
 
 Bash scripts have gotten us pretty far, but it's difficult reasoning about control flow. And there's no type safety. Many command line tools already have decent interfaces, it's just the control flow of that could use some improvements. Sh solves this by relying on Swift control flow.
