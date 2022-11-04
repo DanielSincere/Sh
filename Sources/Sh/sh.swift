@@ -83,13 +83,27 @@ public func sh(_ sink: Sink,
   switch sink {
   case .terminal:
     announce("Running `\(cmd)`")
-  case .file(let path):
-    announce("Running `\(cmd)`, logging to `\(path.blue)`")
+    
+    try shq(sink, cmd, environment: environment, workingDirectory: workingDirectory)
+    
   case .null:
     announce("Running `\(cmd)`, discarding output")
-  }
+    
+    try shq(sink, cmd, environment: environment, workingDirectory: workingDirectory)
+    
+    
+  case .file(let path):
+    announce("Running `\(cmd)`, logging to `\(path.blue)`")
+    do {
+      try shq(sink, cmd, environment: environment, workingDirectory: workingDirectory)
+    } catch {
+      let underlyingError = error
 
-  try shq(sink, cmd, environment: environment, workingDirectory: workingDirectory)
+      
+      let log = try! String(contentsOfFile: path).trimmingCharacters(in: .whitespacesAndNewlines)
+      throw Errors.errorWithLogInfo(log, underlyingError: underlyingError)
+    }
+  }
 }
 
 /// `Async`/`await` version
