@@ -99,9 +99,17 @@ public func sh(_ sink: Sink,
     } catch {
       let underlyingError = error
 
-      
-      let log = try! String(contentsOfFile: path).trimmingCharacters(in: .whitespacesAndNewlines)
-      throw Errors.errorWithLogInfo(log, underlyingError: underlyingError)
+      let logResult = Result {
+        try String(contentsOfFile: path)
+          .trimmingCharacters(in: .whitespacesAndNewlines)
+      }
+
+      switch logResult {
+      case .success(let success):
+        throw Errors.errorWithLogInfo(success, underlyingError: underlyingError)
+      case .failure(let failure):
+        throw Errors.openingLogError(failure, underlyingError: underlyingError)
+      }
     }
   }
 }
