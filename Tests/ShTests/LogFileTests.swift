@@ -9,11 +9,12 @@ final class LogFileTests: XCTestCase {
       try sh(.file("/tmp/sh-test.log"), #"echo "simple" > /unknown/path/name"#)
       XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`")
     } catch Errors.errorWithLogInfo(let logInfo, underlyingError: let underlyingError) {
-      XCTAssertEqual(logInfo, "/bin/sh: /unknown/path/name: No such file or directory")
+
+      XCTAssertTrue(logInfo.contains("/unknown/path/name")
 
       let terminationError = try XCTUnwrap(underlyingError as? TerminationError)
 
-      XCTAssertEqual(terminationError.status, 1)
+      XCTAssertNotEqual(terminationError.status, 0)
       XCTAssertEqual(terminationError.reason, "`regular exit`")
     } catch {
       XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`, instead got an \(error)")
