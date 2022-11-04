@@ -10,7 +10,7 @@ final class LogFileTests: XCTestCase {
       XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`")
     } catch Errors.errorWithLogInfo(let logInfo, underlyingError: let underlyingError) {
 
-      XCTAssertTrue(logInfo.contains("/unknown/path/name")
+      XCTAssertTrue(logInfo.contains("/unknown/path/name"))
 
       let terminationError = try XCTUnwrap(underlyingError as? TerminationError)
 
@@ -22,19 +22,15 @@ final class LogFileTests: XCTestCase {
   }
 
   func testUnwritableLogfile() throws {
-    XCTAssertThrowsError(
+    do {
       try sh(.file("/missing/path/sh-test.log"), #"echo "simple" > /unknown/path/name"#)
-    ) { error in
+    } catch Errors.openingLogError(let logError, underlyingError: let underlyingError) {
+      XCTAssertEqual(logError.localizedDescription, "The file “sh-test.log” couldn’t be opened because there is no such file.")
 
-      switch error {
-      case Errors.openingLogError(let logError, underlyingError: let underlyingError):
-        XCTAssertEqual(logError.localizedDescription, "The file “sh-test.log” couldn’t be opened because there is no such file.")
-
-        XCTAssertTrue(underlyingError.localizedDescription.contains("CouldNotCreateFile error"))
-
-      default:
-        XCTFail("Expected an opening log error, but got \(error)")
-      }
+      XCTAssertTrue(underlyingError.localizedDescription.contains("CouldNotCreateFile error"))
+      
+    } catch {
+      XCTFail("Expected an opening log error, but got \(error)")
     }
   }
 }
