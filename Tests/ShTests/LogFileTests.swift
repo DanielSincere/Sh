@@ -25,10 +25,15 @@ final class LogFileTests: XCTestCase {
     do {
       try sh(.file("/missing/path/sh-test.log"), #"echo "simple" > /unknown/path/name"#)
     } catch Errors.openingLogError(let logError, underlyingError: let underlyingError) {
+
+      #if os(Linux)
+      XCTAssertEqual(logError.localizedDescription, "The operation could not be completed. No such file or directory")
+      #else
       XCTAssertEqual(logError.localizedDescription, "The file “sh-test.log” couldn’t be opened because there is no such file.")
+      #endif
 
       XCTAssertTrue(underlyingError.localizedDescription.contains("CouldNotCreateFile error"))
-      
+
     } catch {
       XCTFail("Expected an opening log error, but got \(error)")
     }
