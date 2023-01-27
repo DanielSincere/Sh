@@ -41,12 +41,13 @@ public func shq(_ cmd: String,
 /// Run a shell command, and parse the output as JSON
 ///
 public func shq<D: Decodable>(_ type: D.Type,
+                              decodedBy jsonDecoder: JSONDecoder = .init(),
                               _ cmd: String,
                              environment: [String: String] = [:],
                              workingDirectory: String? = nil) throws -> D {
   let decoded = try Process(cmd: cmd, environment: environment, workingDirectory: workingDirectory)
     .runReturningData()?
-    .asJSON(decoding: type)
+    .asJSON(decoding: type, using: jsonDecoder)
   
   if let decoded = decoded {
     return decoded
@@ -58,12 +59,13 @@ public func shq<D: Decodable>(_ type: D.Type,
 /// Asynchronously, run a shell command, and parse the output as JSON
 ///
 public func shq<D: Decodable>(_ type: D.Type,
+                              decodedBy jsonDecoder: JSONDecoder = .init(),
                               _ cmd: String,
                              environment: [String: String] = [:],
                              workingDirectory: String? = nil) async throws -> D {
   let decoded = try await Process(cmd: cmd, environment: environment, workingDirectory: workingDirectory)
     .runReturningData()?
-    .asJSON(decoding: type)
+    .asJSON(decoding: type, using: jsonDecoder)
   
   if let decoded = decoded {
     return decoded

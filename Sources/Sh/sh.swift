@@ -43,22 +43,28 @@ public func sh(_ cmd: String,
 /// Run a shell command, and parse the output as JSON
 ///
 public func sh<D: Decodable>(_ type: D.Type,
+                             decodedBy jsonDecoder: JSONDecoder = .init(),
                              _ cmd: String,
                              environment: [String: String] = [:],
                              workingDirectory: String? = nil) throws -> D {
   announce("Running `\(cmd)`, decoding `\(type)`")
 
-  return try shq(type, cmd, environment: environment, workingDirectory: workingDirectory)
+  return try shq(type, decodedBy: jsonDecoder, cmd,
+                 environment: environment,
+                 workingDirectory: workingDirectory)
 }
 
 /// `Async`/`await` version
 public func sh<D: Decodable>(_ type: D.Type,
+                             decodedBy jsonDecoder: JSONDecoder = .init(),
                              _ cmd: String,
                              environment: [String: String] = [:],
                              workingDirectory: String? = nil) async throws -> D {
   await announce("Running `\(cmd)`, decoding `\(type)`")
 
-  return try await shq(type, cmd, environment: environment, workingDirectory: workingDirectory)
+  return try await shq(type, decodedBy: jsonDecoder, cmd,
+                       environment: environment,
+                       workingDirectory: workingDirectory)
 }
 
 
