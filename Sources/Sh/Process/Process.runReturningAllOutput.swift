@@ -55,15 +55,12 @@ extension Process {
       stdOut.fileHandleForReading.readabilityHandler = { handler in
         let nextData = handler.availableData
         
-        Task {
-          await stdOutData.append(nextData)
-        }
+        stdOutData.append(nextData)
       }
+      
       stdErr.fileHandleForReading.readabilityHandler = { handler in
         let nextData = handler.availableData
-        Task {
-          await stdErrData.append(nextData)
-        }
+        stdErrData.append(nextData)
       }
       
       self.terminationHandler = { process in
