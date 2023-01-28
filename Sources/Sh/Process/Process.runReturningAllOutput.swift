@@ -16,9 +16,7 @@ extension Process {
     let stdErr = Pipe()
     var stdErrData = Data()
     self.standardError = stdErr
-    
-
-    
+  
 #if !os(Linux)
     stdOut.fileHandleForReading.readabilityHandler = { handler in
       let nextData = handler.availableData
@@ -60,7 +58,6 @@ extension Process {
       let stdErr = Pipe()
       self.standardError = stdErr
       
-#if !os(Linux)
       stdOut.fileHandleForReading.readabilityHandler = { handler in
         let nextData = handler.availableData
         
@@ -74,8 +71,6 @@ extension Process {
           await stdErrData.append(nextData)
         }
       }
-#endif
-      
       
       self.terminationHandler = { process in
         let maybeTerminationError = process.terminationError
