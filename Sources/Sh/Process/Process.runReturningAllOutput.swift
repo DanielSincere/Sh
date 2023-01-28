@@ -49,8 +49,9 @@ extension Process {
   }
   
   public func runReturningAllOutput() async throws -> AllOutput {
-    let stdOutData = DataHolder()
-    let stdErrData = DataHolder()
+    let stdOutData = SafeDataBuffer()
+    let stdErrData = SafeDataBuffer()
+    
     return try await withCheckedThrowingContinuation  { (continuation: CheckedContinuation<AllOutput, Error>) in
       
       let stdOut = Pipe()
@@ -62,6 +63,7 @@ extension Process {
 #if !os(Linux)
       stdOut.fileHandleForReading.readabilityHandler = { handler in
         let nextData = handler.availableData
+        
         Task {
           await stdOutData.append(nextData)
         }
@@ -79,10 +81,9 @@ extension Process {
         let maybeTerminationError = process.terminationError
         Task {
           
-          continuation.resume(returning: (await stdOutData.data,
-                                          await stdErrData.data,
+          continuation.resume(returning: (await stdOutData.getData(),
+                                          await stdErrData.getData(),
                                           maybeTerminationError))
-          
         }
       }
       

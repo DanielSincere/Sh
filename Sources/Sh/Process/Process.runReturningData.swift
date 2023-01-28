@@ -37,20 +37,38 @@ extension Process {
     }
   }
   
-  actor DataHolder {
-    var data = Data()
+  class SafeDataBuffer {
+    private var data = Data()
+    private let queue = DispatchQueue(label: "Sh-SafeDataBuffer")
     
-    func append(_ more: Data) {
-      self.data.append(more)
+    func append(_ more: Data) async {
+      await withCheckedContinuation({ continuation in
+        queue.async {
+          self.data.append(more)
+          continuation.resume()
+        }
+      })
+    }
+    
+    func appendSync(_ more: Data) {
+      queue.async {
+        self.data.append(more)
+      }
+    }
+    
+    func getData() async -> Data {
+      await withCheckedContinuation({ continuation in
+        queue.sync {
+          continuation.resume(returning: self.data)
+        }
+      })
     }
   }
   
   public func runReturningData() async throws -> Data {   
-    let dataHolder = DataHolder()
-    
+
     return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Data, Error>) in
-      
-      var data = Data()
+      let dataBuffer = SafeDataBuffer()
       let pipe = Pipe()
 
       self.standardOutput = pipe
@@ -59,9 +77,7 @@ extension Process {
 #if !os(Linux)
       pipe.fileHandleForReading.readabilityHandler = { handler in
         let nextData = handler.availableData
-        Task {
-          await dataHolder.append(nextData)
-        }
+        dataBuffer.appendSync(nextData)
       }
 #endif
       self.terminationHandler = { process in
@@ -70,7 +86,7 @@ extension Process {
           continuation.resume(throwing: terminationError)
         } else {
           Task {
-            let data = await dataHolder.data
+            let data = await dataBuffer.getData()
             continuation.resume(returning: data)
           }
         }
