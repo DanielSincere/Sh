@@ -13,7 +13,7 @@ class SafeDataBuffer {
     })
   }
   
-  func appendSync(_ more: Data) {
+  func append(_ more: Data) {
     queue.async {
       self.data.append(more)
     }
@@ -21,9 +21,13 @@ class SafeDataBuffer {
   
   func getData() async -> Data {
     await withCheckedContinuation({ continuation in
-      queue.sync {
+      queue.sync(flags: .barrier) {
         continuation.resume(returning: self.data)
       }
     })
   }
+  
+  var unsafeData: Data {
+    data
   }
+}

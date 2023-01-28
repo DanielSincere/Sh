@@ -5,7 +5,7 @@ extension Process {
   public func runReturningData() throws -> Data {
     
     let queue = DispatchQueue(label: "Sh-standardOutput")
-    var data = Data()
+    var data = SafeDataBuffer()
     let pipe = Pipe()
     
     self.standardOutput = pipe
@@ -14,9 +14,7 @@ extension Process {
 #if !os(Linux)
     pipe.fileHandleForReading.readabilityHandler = { handler in
       let nextData = handler.availableData
-      queue.async {
-        data.append(nextData)
-      }
+      data.append(nextData)
     }
 #endif
     
@@ -33,7 +31,7 @@ extension Process {
     if let terminationError = terminationError {
       throw terminationError
     } else {
-      return data
+      return data.unsafeData
     }
   }
     
@@ -49,7 +47,7 @@ extension Process {
 #if !os(Linux)
       pipe.fileHandleForReading.readabilityHandler = { handler in
         let nextData = handler.availableData
-        dataBuffer.appendSync(nextData)
+        dataBuffer.append(nextData)
       }
 #endif
       self.terminationHandler = { process in
