@@ -24,7 +24,7 @@ extension Process {
     
 #if os(Linux)
     queue.sync {
-      data = outputPipe.fileHandleForReading.readDataToEndOfFile()
+      data = pipe.fileHandleForReading.readDataToEndOfFile()
     }
 #endif
     
