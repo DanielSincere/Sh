@@ -5,16 +5,20 @@ extension Process {
   public typealias AllOutput = (stdOut: Data?, stdErr: Data?, terminationError: TerminationError?)
   
   public func runReturningAllOutput() throws -> AllOutput {
+    
     let stdOut = Pipe()
-    let stdErr = Pipe()
+    var stdOutData = Data()
     self.standardOutput = stdOut
+    
+    let stdErr = Pipe()
+    var stdErrData = Data()
     self.standardError = stdErr
     
     try self.run()
     self.waitUntilExit()
     
-    let stdOutData = try stdOut.fileHandleForReading.readToEnd()
-    let stdErrData = try stdErr.fileHandleForReading.readToEnd()
+//    let stdOutData = try stdOut.fileHandleForReading.readToEnd()
+//    let stdErrData = try stdErr.fileHandleForReading.readToEnd()
     return (stdOut: stdOutData, stdErr: stdErrData, terminationError: terminationError)
   }
   

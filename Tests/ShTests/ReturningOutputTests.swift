@@ -7,14 +7,14 @@ final class ReturningOutputTests: XCTestCase {
     XCTAssertEqual("simple", try sh(#"echo "simple""#))
   }
 
-  func testNilStringOutput() throws {
+  func testEmptyStringOutput() throws {
     let output: String? = try sh("mkdir -p /tmp")
-    XCTAssertNil(output)
+    XCTAssertEqual(output?.count, 0)
   }
 
-  func testNilDataOutput() throws {
-    let output: Data? = try Process(cmd: "mkdir -p /tmp").runReturningData()
-    XCTAssertNil(output)
+  func testEmptyDataOutput() throws {
+    let output: Data = try Process(cmd: "mkdir -p /tmp").runReturningData()
+    XCTAssertEqual(output.count, 0)
   }
 
   func testJsonOutput() throws {

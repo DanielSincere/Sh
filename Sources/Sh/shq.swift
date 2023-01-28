@@ -25,15 +25,16 @@ public func shq(_ cmd: String,
                 environment: [String: String] = [:],
                 workingDirectory: String? = nil) throws -> String?  {
   return try Process(cmd: cmd, environment: environment, workingDirectory: workingDirectory)
-    .runReturningData()?
+    .runReturningData()
     .asTrimmedString()
 }
 
+/// async version of the method with the same signature
 public func shq(_ cmd: String,
                 environment: [String: String] = [:],
                 workingDirectory: String? = nil) async throws -> String?  {
   return try await Process(cmd: cmd, environment: environment, workingDirectory: workingDirectory)
-    .runReturningData()?
+    .runReturningData()
     .asTrimmedString()
 }
 
@@ -45,15 +46,9 @@ public func shq<D: Decodable>(_ type: D.Type,
                               _ cmd: String,
                              environment: [String: String] = [:],
                              workingDirectory: String? = nil) throws -> D {
-  let decoded = try Process(cmd: cmd, environment: environment, workingDirectory: workingDirectory)
-    .runReturningData()?
+  try Process(cmd: cmd, environment: environment, workingDirectory: workingDirectory)
+    .runReturningData()
     .asJSON(decoding: type, using: jsonDecoder)
-  
-  if let decoded = decoded {
-    return decoded
-  } else {
-    throw Errors.unexpectedNilDataError
-  }
 }
 
 /// Asynchronously, run a shell command, and parse the output as JSON
@@ -63,15 +58,11 @@ public func shq<D: Decodable>(_ type: D.Type,
                               _ cmd: String,
                              environment: [String: String] = [:],
                              workingDirectory: String? = nil) async throws -> D {
-  let decoded = try await Process(cmd: cmd, environment: environment, workingDirectory: workingDirectory)
-    .runReturningData()?
-    .asJSON(decoding: type, using: jsonDecoder)
-  
-  if let decoded = decoded {
-    return decoded
-  } else {
-    throw Errors.unexpectedNilDataError
-  }
+  try await Process(cmd: cmd,
+                    environment: environment,
+                    workingDirectory: workingDirectory)
+  .runReturningData()
+  .asJSON(decoding: type, using: jsonDecoder)
 }
 
 /// Run a shell command, sending output to the terminal or a file.
