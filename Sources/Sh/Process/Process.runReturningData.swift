@@ -45,13 +45,10 @@ extension Process {
     }
   }
   
-  public func runReturningData() async throws -> Data {
-//    let queue = DispatchQueue(label: "tt")
-
-    
+  public func runReturningData() async throws -> Data {   
     let dataHolder = DataHolder()
     
-return    try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Data, Error>) in
+    return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Data, Error>) in
       
       var data = Data()
       let pipe = Pipe()
@@ -74,7 +71,7 @@ return    try await withCheckedThrowingContinuation { (continuation: CheckedCont
         } else {
           Task {
             let data = await dataHolder.data
-            continuation.resume(with: .success(data))
+            continuation.resume(returning: data)
           }
         }
       }
