@@ -11,20 +11,12 @@ extension Process {
     self.standardOutput = pipe
     self.standardError = FileHandle.standardError
     
-#if !os(Linux)
     pipe.fileHandleForReading.readabilityHandler = { handler in
       let nextData = handler.availableData
       data.append(nextData)
     }
-#endif
     
     try self.run()
-    
-#if os(Linux)
-    queue.sync {
-      data = pipe.fileHandleForReading.readDataToEndOfFile()
-    }
-#endif
     
     self.waitUntilExit()
     
@@ -65,10 +57,7 @@ extension Process {
       do {
         try self.run()
 #if os(Linux)
-        Task {
-          let data = pipe.fileHandleForReading.readDataToEndOfFile()
-          await dataHolder.append(data)
-        }
+        dataBuffer.append(data)
 #endif
       } catch {
         continuation.resume(with: .failure(error))
