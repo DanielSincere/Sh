@@ -53,7 +53,7 @@ final class ReturningOutputTests: XCTestCase {
   }
   
   func testCustomDecodeJsonOutputAsync() async throws {
-    let json = #"[{"type":"start","date":"2022-10-29T19:22:22Z"},{"type":"stop","date": "2023-10-29T19:22:22Z"}]"#
+    let json = #"[{"type":"start","date":"2022-10-29T19:22:22Z"},{"type":"stop","date":"2023-10-29T19:22:22Z"}]"#
     
     struct Event: Codable {
       let type: String
@@ -73,8 +73,6 @@ final class ReturningOutputTests: XCTestCase {
   func testNilOrEmptyOutputThrowsErrorWhenDecoding() {
     do {
       let _ = try sh([Int].self, "echo")
-    } catch Errors.unexpectedNilDataError {
-      // success
     } catch Swift.DecodingError.dataCorrupted(_) {
       // success
     } catch {

@@ -17,7 +17,7 @@ extension Process {
     var stdErrData = Data()
     self.standardError = stdErr
   
-#if !os(Linux)
+
     stdOut.fileHandleForReading.readabilityHandler = { handler in
       let nextData = handler.availableData
       queue.sync {
@@ -31,16 +31,10 @@ extension Process {
         stdErrData.append(nextData)
       }
     }
-#endif
+
     
     try self.run()
     
-#if os(Linux)
-    queue.sync {
-      stdOutData = stdOut.fileHandleForReading.readDataToEndOfFile()
-      stdErrData = stdErr.fileHandleForReading.readDataToEndOfFile()
-    }
-#endif
     self.waitUntilExit()
     
     return (stdOut: stdOutData, stdErr: stdErrData, terminationError: terminationError)
