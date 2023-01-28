@@ -2,7 +2,9 @@ import Foundation
 
 extension Process {
   
-  public typealias AllOutput = (stdOut: Data?, stdErr: Data?, terminationError: TerminationError?)
+  public typealias AllOutput = (stdOut: Data,
+                                stdErr: Data,
+                                terminationError: TerminationError?)
   
   public func runReturningAllOutput() throws -> AllOutput {
     let queue = DispatchQueue(label: "Sh-runReturningAllOutput")
@@ -47,20 +49,40 @@ extension Process {
   }
   
   public func runReturningAllOutput() async throws -> AllOutput {
-    try await withCheckedThrowingContinuation  { (continuation: CheckedContinuation<AllOutput, Error>) in
+    let stdOutData = DataHolder()
+    let stdErrData = DataHolder()
+    return try await withCheckedThrowingContinuation  { (continuation: CheckedContinuation<AllOutput, Error>) in
+      
       let stdOut = Pipe()
-      let stdErr = Pipe()
       self.standardOutput = stdOut
+      
+      let stdErr = Pipe()
       self.standardError = stdErr
       
+#if !os(Linux)
+      stdOut.fileHandleForReading.readabilityHandler = { handler in
+        let nextData = handler.availableData
+        Task {
+          await stdOutData.append(nextData)
+        }
+      }
+      stdErr.fileHandleForReading.readabilityHandler = { handler in
+        let nextData = handler.availableData
+        Task {
+          await stdErrData.append(nextData)
+        }
+      }
+#endif
+      
+      
       self.terminationHandler = { process in
-        
-        do {
-          let stdOutData = try stdOut.fileHandleForReading.readToEnd()
-          let stdErrData = try stdErr.fileHandleForReading.readToEnd()
-          continuation.resume(with: .success((stdOutData, stdErrData, process.terminationError)))
-        } catch {
-          continuation.resume(with: .failure(error))
+        let maybeTerminationError = process.terminationError
+        Task {
+          
+          continuation.resume(returning: (await stdOutData.data,
+                                          await stdErrData.data,
+                                          maybeTerminationError))
+          
         }
       }
       

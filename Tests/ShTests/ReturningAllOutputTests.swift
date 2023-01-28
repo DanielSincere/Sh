@@ -5,7 +5,8 @@ import XCTest
 final class ReturningAllOutputTests: XCTestCase {
   
   func testSimple() throws {
-    let allOutput = try Process(cmd: #"echo "simple""#).runReturningAllOutput()
+    let process = Process(cmd: #"echo "simple""#)
+    let allOutput = try process.runReturningAllOutput()
     
     XCTAssertEqual(allOutput.stdOut, "simple\n".data(using: .utf8)!)
     XCTAssertEqual(allOutput.stdErr, Data())
@@ -13,7 +14,8 @@ final class ReturningAllOutputTests: XCTestCase {
   }
   
   func testSimpleAsync() async throws {
-    let allOutput = try await Process(cmd: #"echo "simple""#).runReturningAllOutput()
+    let process = Process(cmd: #"echo "simple""#)
+    let allOutput = try await process.runReturningAllOutput()
     
     XCTAssertEqual(allOutput.stdOut, "simple\n".data(using: .utf8)!)
     XCTAssertEqual(allOutput.stdErr, Data())
