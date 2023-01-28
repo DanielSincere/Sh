@@ -35,7 +35,6 @@ extension Process {
       self.standardOutput = pipe
       self.standardError = FileHandle.standardError
       
-
       pipe.fileHandleForReading.readabilityHandler = { handler in
         let nextData = handler.availableData
         dataBuffer.append(nextData)

@@ -17,7 +17,6 @@ extension Process {
     var stdErrData = Data()
     self.standardError = stdErr
   
-
     stdOut.fileHandleForReading.readabilityHandler = { handler in
       let nextData = handler.availableData
       queue.sync {
@@ -32,9 +31,7 @@ extension Process {
       }
     }
 
-    
     try self.run()
-    
     self.waitUntilExit()
     
     return (stdOut: stdOutData, stdErr: stdErrData, terminationError: terminationError)
@@ -54,7 +51,6 @@ extension Process {
       
       stdOut.fileHandleForReading.readabilityHandler = { handler in
         let nextData = handler.availableData
-        
         stdOutData.append(nextData)
       }
       
@@ -66,7 +62,6 @@ extension Process {
       self.terminationHandler = { process in
         let maybeTerminationError = process.terminationError
         Task {
-          
           continuation.resume(returning: (await stdOutData.getData(),
                                           await stdErrData.getData(),
                                           maybeTerminationError))
@@ -76,7 +71,7 @@ extension Process {
       do {
         try self.run()
       } catch {
-        continuation.resume(with: .failure(error))
+        continuation.resume(throwing: error)
       }
     }
   }
