@@ -1,10 +1,21 @@
 import XCTest
+import System
+import Foundation
 @testable import Sh
 
 final class LogFileTests: XCTestCase {
-
+  
   func testSimple() throws {
+    try sh(.file("/tmp/sh-test.log"), #"echo "simple""#)
+    XCTAssertEqual(try String(contentsOfFile: "/tmp/sh-test.log"), "simple\n")
+  }
 
+  func testSimpleAsync() async throws {
+    try await sh(.file("/tmp/sh-test.log"), #"echo "simple""#)
+    XCTAssertEqual(try String(contentsOfFile: "/tmp/sh-test.log"), "simple\n")
+  }
+
+  func testError() throws {
     do {
       try sh(.file("/tmp/sh-test.log"), #"echo "simple" > /unknown/path/name"#)
       XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`")
@@ -20,6 +31,7 @@ final class LogFileTests: XCTestCase {
       XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`, instead got an \(error)")
     }
   }
+  
 
   func testUnwritableLogfile() throws {
     do {
