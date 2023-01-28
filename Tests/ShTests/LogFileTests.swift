@@ -1,5 +1,4 @@
 import XCTest
-import System
 import Foundation
 @testable import Sh
 
