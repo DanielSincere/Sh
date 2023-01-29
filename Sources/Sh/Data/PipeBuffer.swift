@@ -1,5 +1,9 @@
 import Foundation
 
+enum StreamID: String {
+  case stdOut, stdErr
+}
+
 class PipeBuffer {
 
   let pipe = Pipe()
@@ -17,7 +21,5 @@ class PipeBuffer {
     }
   }
   
-  enum StreamID: String {
-    case stdOut, stdErr
-  }
+
 }
