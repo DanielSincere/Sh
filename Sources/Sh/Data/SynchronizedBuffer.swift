@@ -10,13 +10,13 @@ class SynchronizedBuffer<T: RangeReplaceableCollection> {
   }
   
   func append(_ more: T) {
-    queue.async(flags: .barrier) {
+    queue.async {
       self.buffer.append(contentsOf: more)
     }
   }
   
   func yieldValue(block: @escaping (T) -> Void) {
-    queue.async(flags: .barrier) {
+    queue.async {
       let value = self.buffer
       block(value)
     }
