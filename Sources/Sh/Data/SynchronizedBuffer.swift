@@ -16,7 +16,7 @@ class SynchronizedBuffer<T: RangeReplaceableCollection> {
   }
   
   func yieldValue(block: @escaping (T) -> Void) {
-    queue.async {
+    queue.sync {
       let value = self.buffer
       block(value)
     }
