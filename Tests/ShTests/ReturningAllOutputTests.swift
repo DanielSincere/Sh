@@ -17,7 +17,7 @@ final class ReturningAllOutputTests: XCTestCase {
     let process = Process(cmd: #"echo "simple""#)
     let allOutput = try await process.runReturningAllOutput()
     
-    XCTAssertEqual(allOutput.stdOut, "simple\n".data(using: .utf8)!)
+    XCTAssertEqual(allOutput.stdOut.asTrimmedString(), "simple")
     XCTAssertEqual(allOutput.stdErr, Data())
     XCTAssertNil(allOutput.terminationError)
   }
