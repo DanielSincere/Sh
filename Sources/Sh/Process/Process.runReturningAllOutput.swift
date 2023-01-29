@@ -7,57 +7,37 @@ extension Process {
                                 terminationError: TerminationError?)
   
   public func runReturningAllOutput() throws -> AllOutput {
+        
+    let stdOut = PipeBuffer(id: .stdOut)
+    self.standardOutput = stdOut.pipe
     
-    let stdOut = Pipe()
-    let stdOutData = SynchronizedBuffer<Data>()
-    self.standardOutput = stdOut
-    stdOut.fileHandleForReading.readabilityHandler = { handler in
-      let nextData = handler.availableData
-      stdOutData.append(nextData)
-    }
+    let stdErr = PipeBuffer(id: .stdErr)
+    self.standardError = stdErr.pipe
     
-    let stdErr = Pipe()
-    let stdErrData = SynchronizedBuffer<Data>()
-    self.standardError = stdErr
-    stdErr.fileHandleForReading.readabilityHandler = { handler in
-      let nextData = handler.availableData
-      stdErrData.append(nextData)
-    }
-
     try self.run()
     self.waitUntilExit()
     
-    return (stdOut: stdOutData.unsafeValue,
-            stdErr: stdErrData.unsafeValue,
+    return (stdOut: stdOut.buffer.unsafeValue,
+            stdErr: stdErr.buffer.unsafeValue,
             terminationError: terminationError)
   }
   
   public func runReturningAllOutput() async throws -> AllOutput {
     
-    let stdOutData = SynchronizedBuffer<Data>()
-    let stdOut = Pipe()
-    self.standardOutput = stdOut
-    stdOut.fileHandleForReading.readabilityHandler = { handler in
-      let nextData = handler.availableData
-      stdOutData.append(nextData)
-    }
-
-    let stdErrData = SynchronizedBuffer<Data>()
-    let stdErr = Pipe()
-    self.standardError = stdErr
-    stdErr.fileHandleForReading.readabilityHandler = { handler in
-      let nextData = handler.availableData
-      stdErrData.append(nextData)
-    }
+    let stdOut = PipeBuffer(id: .stdOut)
+    self.standardOutput = stdOut.pipe
+    
+    let stdErr = PipeBuffer(id: .stdErr)
+    self.standardError = stdErr.pipe
     
     return try await withCheckedThrowingContinuation  { (continuation: CheckedContinuation<AllOutput, Error>) in
       
       self.terminationHandler = { process in
         let maybeTerminationError = process.terminationError
-
+        
         Task {
-          continuation.resume(returning: (await stdOutData.getData(),
-                                          await stdErrData.getData(),
+          continuation.resume(returning: (await stdOut.buffer.getData(),
+                                          await stdErr.buffer.getData(),
                                           maybeTerminationError))
         }
       }

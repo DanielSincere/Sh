@@ -1,20 +1,16 @@
 import Foundation
 
 class SynchronizedBuffer<T: RangeReplaceableCollection> {
-  private var buffer = T()
-  private let queue = DispatchQueue(label: "Sh-SafeDataBuffer")
   
-  func append(_ more: T) async {
-    await withCheckedContinuation({ continuation in
-      queue.sync {
-        self.buffer.append(contentsOf: more)
-        continuation.resume()
-      }
-    })
+  private var buffer = T()
+  private let queue: DispatchQueue
+  
+  init(label: String) {
+    queue = DispatchQueue(label: label)
   }
   
   func append(_ more: T) {
-    queue.sync {
+    queue.async {
       self.buffer.append(contentsOf: more)
     }
   }
