@@ -27,19 +27,17 @@ extension Process {
   }
     
   public func runReturningData() async throws -> Data {   
-
+    self.standardError = FileHandle.standardError
+    
+    let dataBuffer = SafeDataBuffer()
+    let pipe = Pipe()
+    self.standardOutput = pipe   
+    pipe.fileHandleForReading.readabilityHandler = { handler in
+      let nextData = handler.availableData
+      dataBuffer.append(nextData)
+    }
+    
     return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Data, Error>) in
-      let dataBuffer = SafeDataBuffer()
-      let pipe = Pipe()
-
-      self.standardOutput = pipe
-      self.standardError = FileHandle.standardError
-      
-      pipe.fileHandleForReading.readabilityHandler = { handler in
-        let nextData = handler.availableData
-        dataBuffer.append(nextData)
-      }
-
       self.terminationHandler = { process in
         
         if let terminationError = process.terminationError {
