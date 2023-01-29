@@ -1,25 +1,40 @@
 import Foundation
 
-enum StreamID: String {
-  case stdOut, stdErr
-}
-
 class PipeBuffer {
-
+  enum StreamID: String {
+    case stdOut, stdErr
+  }
+  
   let pipe = Pipe()
-  let buffer: SynchronizedBuffer<Data>
+  private var buffer: Data = .init()
+  private let queue: DispatchQueue
   
   convenience init(id: StreamID) {
     self.init(label: id.rawValue)
   }
   
   init(label: String) {
-    self.buffer = SynchronizedBuffer(label: label)
+    self.queue = DispatchQueue(label: label)
     pipe.fileHandleForReading.readabilityHandler = { handler in
       let nextData = handler.availableData
       self.buffer.append(nextData)
     }
   }
   
-
+  func append(_ more: Data) {
+    queue.async {
+      self.buffer.append(contentsOf: more)
+    }
+  }
+  
+  func yieldValue(block: @escaping (Data) -> Void) {
+    queue.sync {
+      let value = self.buffer
+      block(value)
+    }
+  }
+  
+  var unsafeValue: Data {
+    buffer
+  }
 }

@@ -17,8 +17,8 @@ extension Process {
     try self.run()
     self.waitUntilExit()
     
-    return (stdOut: stdOut.buffer.unsafeValue,
-            stdErr: stdErr.buffer.unsafeValue,
+    return (stdOut: stdOut.unsafeValue,
+            stdErr: stdErr.unsafeValue,
             terminationError: terminationError)
   }
   
@@ -35,8 +35,8 @@ extension Process {
       self.terminationHandler = { process in
         let maybeTerminationError = process.terminationError
         
-        stdErr.buffer.yieldValue { stdErrData in
-          stdOut.buffer.yieldValue { stdOutData in
+        stdErr.yieldValue { stdErrData in
+          stdOut.yieldValue { stdOutData in
             continuation.resume(returning: (stdOutData,
                                             stdErrData,
                                             maybeTerminationError))
