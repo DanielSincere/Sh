@@ -10,7 +10,7 @@ class SynchronizedBuffer<T: RangeReplaceableCollection> {
   }
   
   func append(_ more: T) {
-    queue.async {
+    queue.sync {
       self.buffer.append(contentsOf: more)
     }
   }

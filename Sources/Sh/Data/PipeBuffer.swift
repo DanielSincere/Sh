@@ -17,8 +17,6 @@ class PipeBuffer {
     }
   }
   
-
-  
   enum StreamID: String {
     case stdOut, stdErr
   }

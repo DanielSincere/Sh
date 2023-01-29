@@ -42,7 +42,6 @@ extension Process {
                                             maybeTerminationError))
           }
         }
-
       }
       
       do {
