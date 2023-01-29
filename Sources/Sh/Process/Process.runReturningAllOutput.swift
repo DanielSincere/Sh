@@ -35,8 +35,8 @@ extension Process {
       self.terminationHandler = { process in
         let maybeTerminationError = process.terminationError
         
-        stdOut.buffer.data { stdOutData in
-          stdErr.buffer.data { stdErrData in
+        stdErr.buffer.data { stdErrData in
+          stdOut.buffer.data { stdOutData in
             continuation.resume(returning: (stdOutData,
                                             stdErrData,
                                             maybeTerminationError))
