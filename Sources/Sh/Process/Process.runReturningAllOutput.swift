@@ -35,11 +35,14 @@ extension Process {
       self.terminationHandler = { process in
         let maybeTerminationError = process.terminationError
         
-        Task {
-          continuation.resume(returning: (await stdOut.buffer.getData(),
-                                          await stdErr.buffer.getData(),
-                                          maybeTerminationError))
+        stdOut.buffer.data { stdOutData in
+          stdErr.buffer.data { stdErrData in
+            continuation.resume(returning: (stdOutData,
+                                            stdErrData,
+                                            maybeTerminationError))
+          }
         }
+
       }
       
       do {

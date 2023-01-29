@@ -30,8 +30,7 @@ extension Process {
         if let terminationError = process.terminationError {
           continuation.resume(throwing: terminationError)
         } else {
-          Task {
-            let data = await stdOut.buffer.getData()
+          stdOut.buffer.data { data in
             continuation.resume(returning: data)
           }
         }

@@ -15,13 +15,11 @@ class SynchronizedBuffer<T: RangeReplaceableCollection> {
     }
   }
   
-  func getData() async -> T {
-    await withCheckedContinuation({ continuation in
-      queue.sync(flags: .barrier) {
-        let value = self.buffer
-        continuation.resume(returning: value)
-      }
-    })
+  func data(block: (T) -> Void) {
+    queue.sync(flags: .barrier) {
+      let value = self.buffer
+      block(value)
+    }
   }
   
   var unsafeValue: T {
