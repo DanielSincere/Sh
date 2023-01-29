@@ -9,7 +9,7 @@ extension Process {
   public func runReturningAllOutput() throws -> AllOutput {
     
     let stdOut = Pipe()
-    let stdOutData = SafeDataBuffer()
+    let stdOutData = SynchronizedBuffer<Data>()
     self.standardOutput = stdOut
     stdOut.fileHandleForReading.readabilityHandler = { handler in
       let nextData = handler.availableData
@@ -17,7 +17,7 @@ extension Process {
     }
     
     let stdErr = Pipe()
-    let stdErrData = SafeDataBuffer()
+    let stdErrData = SynchronizedBuffer<Data>()
     self.standardError = stdErr
     stdErr.fileHandleForReading.readabilityHandler = { handler in
       let nextData = handler.availableData
@@ -27,12 +27,14 @@ extension Process {
     try self.run()
     self.waitUntilExit()
     
-    return (stdOut: stdOutData.unsafeData, stdErr: stdErrData.unsafeData, terminationError: terminationError)
+    return (stdOut: stdOutData.unsafeValue,
+            stdErr: stdErrData.unsafeValue,
+            terminationError: terminationError)
   }
   
   public func runReturningAllOutput() async throws -> AllOutput {
     
-    let stdOutData = SafeDataBuffer()
+    let stdOutData = SynchronizedBuffer<Data>()
     let stdOut = Pipe()
     self.standardOutput = stdOut
     stdOut.fileHandleForReading.readabilityHandler = { handler in
@@ -40,7 +42,7 @@ extension Process {
       stdOutData.append(nextData)
     }
 
-    let stdErrData = SafeDataBuffer()
+    let stdErrData = SynchronizedBuffer<Data>()
     let stdErr = Pipe()
     self.standardError = stdErr
     stdErr.fileHandleForReading.readabilityHandler = { handler in

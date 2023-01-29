@@ -4,7 +4,7 @@ extension Process {
   
   public func runReturningData() throws -> Data {
     
-    let data = SafeDataBuffer()
+    let data = SynchronizedBuffer<Data>()
     let pipe = Pipe()
     
     self.standardOutput = pipe
@@ -22,16 +22,16 @@ extension Process {
     if let terminationError = terminationError {
       throw terminationError
     } else {
-      return data.unsafeData
+      return data.unsafeValue
     }
   }
     
   public func runReturningData() async throws -> Data {   
     self.standardError = FileHandle.standardError
     
-    let dataBuffer = SafeDataBuffer()
+    let dataBuffer = SynchronizedBuffer<Data>()
     let pipe = Pipe()
-    self.standardOutput = pipe   
+    self.standardOutput = pipe
     pipe.fileHandleForReading.readabilityHandler = { handler in
       let nextData = handler.availableData
       dataBuffer.append(nextData)
