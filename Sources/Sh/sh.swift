@@ -89,14 +89,15 @@ public func sh(_ sink: Sink,
   switch sink {
   case .terminal:
     announce("Running `\(cmd)`")
-    
     try shq(sink, cmd, environment: environment, workingDirectory: workingDirectory)
     
   case .null:
     announce("Running `\(cmd)`, discarding output")
-    
     try shq(sink, cmd, environment: environment, workingDirectory: workingDirectory)
     
+  case .split(let out, let err):
+    announce("Running `\(cmd)`, output to `\(out.blue)`, error to `\(err.blue)`")
+    try shq(sink, cmd, environment: environment, workingDirectory: workingDirectory)
     
   case .file(let path):
     announce("Running `\(cmd)`, logging to `\(path.blue)`")
@@ -131,6 +132,8 @@ public func sh(_ sink: Sink,
     await announce("Running `\(cmd)`")
   case .file(let path):
     await announce("Running `\(cmd)`, logging to `\(path.blue)`")
+  case .split(let out, let err):
+    await announce("Running `\(cmd)`, output to `\(out.blue)`, error to `\(err.blue)`")
   case .null:
     await announce("Running `\(cmd)`, discarding output")
   }

@@ -2,39 +2,36 @@ import Foundation
 
 extension Process {
   
-  public func runReturningData() throws -> Data? {
-    
-    let stdOut = Pipe()
-    self.standardOutput = stdOut
+  public func runReturningData() throws -> Data {
+
+    let stdOut = PipeBuffer(id: .stdOut)
+    self.standardOutput = stdOut.pipe
     self.standardError = FileHandle.standardError
     
     try self.run()
+    
     self.waitUntilExit()
     
     if let terminationError = terminationError {
       throw terminationError
     } else {
-      return try stdOut.fileHandleForReading.readToEnd()
+      return stdOut.unsafeValue
     }
   }
-  
-  public func runReturningData() async throws -> Data? {
     
-    try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Data?, Error>) in
-      let stdOut = Pipe()
-      self.standardOutput = stdOut
-      self.standardError = FileHandle.standardError
-      
+  public func runReturningData() async throws -> Data {   
+    self.standardError = FileHandle.standardError
+    
+    let stdOut = PipeBuffer(id: .stdOut)
+    self.standardOutput = stdOut.pipe
+    
+    return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Data, Error>) in
       self.terminationHandler = { process in
-        
         if let terminationError = process.terminationError {
           continuation.resume(throwing: terminationError)
         } else {
-          do {
-            let stdOutData = try stdOut.fileHandleForReading.readToEnd()
-            continuation.resume(with: .success(stdOutData))
-          } catch {
-            continuation.resume(with: .failure(error))
+          stdOut.yieldValue { data in
+            continuation.resume(returning: data)
           }
         }
       }

@@ -42,6 +42,8 @@ extension Process {
       self.redirectAllOutputToTerminal()
     case .file(path: let path):
       try self.redirectAllOutputToFile(path: path)
+    case .split(let out, err: let err):
+      try self.redirectAllOutputToFiles(out: out, err: err)
     case .null:
       self.redirectAllOutputToNullDevice()
     }
@@ -57,8 +59,7 @@ extension Process {
     self.standardError = FileHandle.nullDevice
   }
   
-  private func redirectAllOutputToFile(path: String) throws {
-    
+  private func createFile(atPath path: String) throws -> FileHandle {
     guard FileManager.default.createFile(atPath: path, contents: Data()) else {
       struct CouldNotCreateFile: Error {
         let path: String
@@ -72,8 +73,17 @@ extension Process {
       }
       throw CouldNotOpenFileForWriting(path: path)
     }
-    
+    return fileHandle
+  }
+  
+  private func redirectAllOutputToFile(path: String) throws {
+    let fileHandle = try self.createFile(atPath: path)
     self.standardError = fileHandle
     self.standardOutput = fileHandle
+  }
+  
+  private func redirectAllOutputToFiles(out: String, err: String) throws {
+    self.standardOutput = try self.createFile(atPath: out)
+    self.standardError = try self.createFile(atPath: err)
   }
 }

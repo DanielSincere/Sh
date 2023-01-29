@@ -2,44 +2,52 @@ import Foundation
 
 extension Process {
   
-  public typealias AllOutput = (stdOut: Data?, stdErr: Data?, terminationError: TerminationError?)
+  public typealias AllOutput = (stdOut: Data,
+                                stdErr: Data,
+                                terminationError: TerminationError?)
   
   public func runReturningAllOutput() throws -> AllOutput {
-    let stdOut = Pipe()
-    let stdErr = Pipe()
-    self.standardOutput = stdOut
-    self.standardError = stdErr
+        
+    let stdOut = PipeBuffer(id: .stdOut)
+    self.standardOutput = stdOut.pipe
+    
+    let stdErr = PipeBuffer(id: .stdErr)
+    self.standardError = stdErr.pipe
     
     try self.run()
     self.waitUntilExit()
     
-    let stdOutData = try stdOut.fileHandleForReading.readToEnd()
-    let stdErrData = try stdErr.fileHandleForReading.readToEnd()
-    return (stdOut: stdOutData, stdErr: stdErrData, terminationError: terminationError)
+    return (stdOut: stdOut.unsafeValue,
+            stdErr: stdErr.unsafeValue,
+            terminationError: terminationError)
   }
   
   public func runReturningAllOutput() async throws -> AllOutput {
-    try await withCheckedThrowingContinuation  { (continuation: CheckedContinuation<AllOutput, Error>) in
-      let stdOut = Pipe()
-      let stdErr = Pipe()
-      self.standardOutput = stdOut
-      self.standardError = stdErr
+    
+    let stdOut = PipeBuffer(id: .stdOut)
+    self.standardOutput = stdOut.pipe
+    
+    let stdErr = PipeBuffer(id: .stdErr)
+    self.standardError = stdErr.pipe
+    
+    return try await withCheckedThrowingContinuation  { (continuation: CheckedContinuation<AllOutput, Error>) in
       
       self.terminationHandler = { process in
+        let maybeTerminationError = process.terminationError
         
-        do {
-          let stdOutData = try stdOut.fileHandleForReading.readToEnd()
-          let stdErrData = try stdErr.fileHandleForReading.readToEnd()
-          continuation.resume(with: .success((stdOutData, stdErrData, process.terminationError)))
-        } catch {
-          continuation.resume(with: .failure(error))
+        stdErr.yieldValue { stdErrData in
+          stdOut.yieldValue { stdOutData in
+            continuation.resume(returning: (stdOutData,
+                                            stdErrData,
+                                            maybeTerminationError))
+          }
         }
       }
       
       do {
         try self.run()
       } catch {
-        continuation.resume(with: .failure(error))
+        continuation.resume(throwing: error)
       }
     }
   }

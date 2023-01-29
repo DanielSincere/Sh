@@ -7,14 +7,14 @@ final class ReturningOutputTests: XCTestCase {
     XCTAssertEqual("simple", try sh(#"echo "simple""#))
   }
 
-  func testNilStringOutput() throws {
+  func testEmptyStringOutput() throws {
     let output: String? = try sh("mkdir -p /tmp")
-    XCTAssertNil(output)
+    XCTAssertEqual(output?.count, 0)
   }
 
-  func testNilDataOutput() throws {
-    let output: Data? = try Process(cmd: "mkdir -p /tmp").runReturningData()
-    XCTAssertNil(output)
+  func testEmptyDataOutput() throws {
+    let output: Data = try Process(cmd: "mkdir -p /tmp").runReturningData()
+    XCTAssertEqual(output.count, 0)
   }
 
   func testJsonOutput() throws {
@@ -53,7 +53,7 @@ final class ReturningOutputTests: XCTestCase {
   }
   
   func testCustomDecodeJsonOutputAsync() async throws {
-    let json = #"[{"type":"start","date":"2022-10-29T19:22:22Z"},{"type":"stop","date": "2023-10-29T19:22:22Z"}]"#
+    let json = #"[{"type":"start","date":"2022-10-29T19:22:22Z"},{"type":"stop","date":"2023-10-29T19:22:22Z"}]"#
     
     struct Event: Codable {
       let type: String
@@ -73,8 +73,6 @@ final class ReturningOutputTests: XCTestCase {
   func testNilOrEmptyOutputThrowsErrorWhenDecoding() {
     do {
       let _ = try sh([Int].self, "echo")
-    } catch Errors.unexpectedNilDataError {
-      // success
     } catch Swift.DecodingError.dataCorrupted(_) {
       // success
     } catch {
