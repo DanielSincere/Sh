@@ -7,32 +7,27 @@ extension Process {
                                 terminationError: TerminationError?)
   
   public func runReturningAllOutput() throws -> AllOutput {
-    let queue = DispatchQueue(label: "Sh-runReturningAllOutput")
     
     let stdOut = Pipe()
-    var stdOutData = Data()
+    let stdOutData = SafeDataBuffer()
     self.standardOutput = stdOut
     stdOut.fileHandleForReading.readabilityHandler = { handler in
       let nextData = handler.availableData
-      queue.sync {
-        stdOutData.append(nextData)
-      }
+      stdOutData.append(nextData)
     }
     
     let stdErr = Pipe()
-    var stdErrData = Data()
-    self.standardError = stdErr    
+    let stdErrData = SafeDataBuffer()
+    self.standardError = stdErr
     stdErr.fileHandleForReading.readabilityHandler = { handler in
       let nextData = handler.availableData
-      queue.sync {
-        stdErrData.append(nextData)
-      }
+      stdErrData.append(nextData)
     }
 
     try self.run()
     self.waitUntilExit()
     
-    return (stdOut: stdOutData, stdErr: stdErrData, terminationError: terminationError)
+    return (stdOut: stdOutData.unsafeData, stdErr: stdErrData.unsafeData, terminationError: terminationError)
   }
   
   public func runReturningAllOutput() async throws -> AllOutput {
