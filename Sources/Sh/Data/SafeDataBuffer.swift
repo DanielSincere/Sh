@@ -22,7 +22,8 @@ class SafeDataBuffer {
   func getData() async -> Data {
     await withCheckedContinuation({ continuation in
       queue.sync(flags: .barrier) {
-        continuation.resume(returning: self.data)
+        let data = self.data
+        continuation.resume(returning: data)
       }
     })
   }
