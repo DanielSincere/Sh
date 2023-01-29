@@ -22,6 +22,13 @@ final class ReturningAllOutputTests: XCTestCase {
     XCTAssertNil(allOutput.terminationError)
   }
   
+  func testLoremIpsumData() throws {
+    let cmd = #"echo "$LOREM_IPSUM""#
+    let environment = ["LOREM_IPSUM": loremIpsum]
+    let output = try sh(cmd, environment: environment)
+    XCTAssertEqual(output, loremIpsum)
+  }
+  
   func testLoremIpsum() throws {
     let process = Process(cmd: #"echo "$LOREM_IPSUM""#, environment: ["LOREM_IPSUM": loremIpsum])
     let allOutput = try process.runReturningAllOutput()
