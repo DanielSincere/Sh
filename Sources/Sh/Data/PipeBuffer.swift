@@ -31,7 +31,12 @@ class PipeBuffer {
     queue.sync {
       let value = self.buffer
       block(value)
+      cleanup()
     }
+  }
+
+  func cleanup() {
+    pipe.fileHandleForReading.readabilityHandler = nil
   }
   
   var unsafeValue: Data {
