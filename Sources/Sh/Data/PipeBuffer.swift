@@ -22,21 +22,18 @@ class PipeBuffer {
   }
   
   func append(_ more: Data) {
-    queue.async {
+    queue.sync {
       self.buffer.append(contentsOf: more)
     }
   }
   
-  func yieldValue(block: @escaping (Data) -> Void) {
+  func yieldValueAndClose(block: @escaping (Data) -> Void) {
     queue.sync {
       let value = self.buffer
       block(value)
-      cleanup()
+      pipe.fileHandleForReading.readabilityHandler = nil
+      buffer = Data()
     }
-  }
-
-  func cleanup() {
-    pipe.fileHandleForReading.readabilityHandler = nil
   }
   
   var unsafeValue: Data {

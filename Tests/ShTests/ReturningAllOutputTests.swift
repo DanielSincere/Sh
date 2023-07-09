@@ -14,7 +14,7 @@ final class ReturningAllOutputTests: XCTestCase {
   }
   
   func testSimpleAsync() async throws {
-    let process = Process(cmd: #"echo "simple""#)
+    let process = Process(cmd: #"echo simple"#)
     let allOutput = try await process.runReturningAllOutput()
     
     XCTAssertEqual(allOutput.stdOut.asTrimmedString(), "simple")

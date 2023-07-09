@@ -14,36 +14,48 @@ final class LogFileTests: XCTestCase {
     XCTAssertEqual(try String(contentsOfFile: "/tmp/sh-test.log"), "simple\n")
   }
 
-//   func testPrintingErrorWhenFileOutputIsShort() throws {
-//     do {
-//       try sh(.file("/tmp/sh-test.log"), """
-//       swift test --package-path Fixtures/SwiftProjectWithFailingTests
-//       """)
-//       XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`")
-//     } catch Errors.errorWithLogInfo(let logInfo, underlyingError: let underlyingError) {
-//
-//       XCTAssertTrue(logInfo.contains("/unknown/path/name"))
-//
-//       let terminationError = try XCTUnwrap(underlyingError as? TerminationError)
-//
-//       XCTAssertNotEqual(terminationError.status, 0)
-//       XCTAssertEqual(terminationError.reason, "`regular exit`")
-//
-//
-//       let error = Errors.errorWithLogInfo(logInfo, underlyingError: underlyingError)
-//       XCTAssertEqual(error.localizedDescription, """
-//       An error occurred: Ended with status 1 with reason: `regular exit`. Here is the contents of the log file:
-//
-//       /bin/sh: /unknown/path/name: No such file or directory
-//       """)
-//
-//     } catch {
-//       XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`, instead got an \(error)")
-//     }
-//   }
+   func testPrintingErrorWhenFileOutputIsShort() throws {
+     do {
+       try sh(.file("/tmp/sh-test.log"), #"echo "simple" > /unknown/path/name"#)
+       XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`")
+     } catch Errors.errorWithLogInfo(let logInfo, underlyingError: let underlyingError) {
+
+       XCTAssertTrue(logInfo.contains("/unknown/path/name"))
+
+       let terminationError = try XCTUnwrap(underlyingError as? TerminationError)
+
+       XCTAssertNotEqual(terminationError.status, 0)
+       XCTAssertEqual(terminationError.reason, "`regular exit`")
+
+       let error = Errors.errorWithLogInfo(logInfo, underlyingError: underlyingError)
+       XCTAssertTrue(error.localizedDescription.contains("/unknown/path/name"))
+     } catch {
+       XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`, instead got an \(error)")
+     }
+   }
 
   func testPrintingErrorWhenFileOutputIsLong() throws {
+    do {
+      try sh(.file("/tmp/sh-test.log"), """
+      swift test --package-path Fixtures/SwiftProjectWithFailingTests
+      """)
+      XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`")
+    } catch Errors.errorWithLogInfo(let logInfo, underlyingError: let underlyingError) {
 
+      XCTAssertTrue(logInfo.contains(#"XCTAssertEqual failed: ("Some name") is not equal to ("Wrong name")"#))
+
+      let terminationError = try XCTUnwrap(underlyingError as? TerminationError)
+
+      XCTAssertNotEqual(terminationError.status, 0)
+      XCTAssertEqual(terminationError.reason, "`regular exit`")
+
+      let error = Errors.errorWithLogInfo(logInfo, underlyingError: underlyingError)
+      XCTAssertTrue(error.localizedDescription.contains(#"XCTAssertEqual failed: ("Some name") is not equal to ("Wrong name")"#))
+
+//      print(error.localizedDescription)
+    } catch {
+      XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`, instead got an \(error)")
+    }
   }
 
   func testUnwritableLogfile() throws {

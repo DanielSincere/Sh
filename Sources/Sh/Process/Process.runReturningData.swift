@@ -30,7 +30,7 @@ extension Process {
         if let terminationError = process.terminationError {
           continuation.resume(throwing: terminationError)
         } else {
-          stdOut.yieldValue { data in
+          stdOut.yieldValueAndClose { data in
             continuation.resume(returning: data)
           }
         }
