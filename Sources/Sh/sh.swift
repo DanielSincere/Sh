@@ -107,8 +107,11 @@ public func sh(_ sink: Sink,
       let underlyingError = error
 
       let logResult = Result {
-        let lastFewLines = try sh("tail -n 10 \(path)")?
-          .trimmingCharacters(in: .whitespacesAndNewlines) ?? "<no content in log file>"
+
+        guard let lastFewLines = try sh("tail -n 10 \(path)")?
+          .trimmingCharacters(in: .whitespacesAndNewlines), !lastFewLines.isEmpty else {
+          return "<no content in log file>"
+        }
 
         return lastFewLines
       }
