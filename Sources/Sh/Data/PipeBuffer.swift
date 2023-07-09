@@ -21,10 +21,14 @@ class PipeBuffer {
     )
 
     self.pipe.fileHandleForReading.readabilityHandler = { handler in
-      self.queue.async {
-        let nextData = handler.availableData
-        self.buffer.append(contentsOf: nextData)
-      }
+      let data = handler.availableData
+      self.append(data: data)
+    }
+  }
+
+  func append(data: Data) {
+    self.queue.async {
+      self.buffer.append(contentsOf: data)
     }
   }
 
