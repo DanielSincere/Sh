@@ -15,8 +15,16 @@ jobs:
         include:
           - os: macos-12
             swift: "5.7"
+          - os: macos-13
+            swift: "5.7"
           - os: ubuntu-latest
             swift: "5.7"
+          - os: macos-13
+            swift: "5.8"
+          - os: macos-12
+            swift: "5.8"
+          - os: ubuntu-latest
+            swift: "5.8"
 
     steps:
       - uses: swift-actions/setup-swift@v1
