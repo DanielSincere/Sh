@@ -52,7 +52,6 @@ final class LogFileTests: XCTestCase {
       let error = Errors.errorWithLogInfo(logInfo, underlyingError: underlyingError)
       XCTAssertTrue(error.localizedDescription.contains(#"XCTAssertEqual failed: ("Some name") is not equal to ("Wrong name")"#))
 
-//      print(error.localizedDescription)
     } catch {
       XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`, instead got an \(error)")
     }
