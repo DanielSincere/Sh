@@ -35,13 +35,13 @@ extension Process {
       self.terminationHandler = { process in
         let maybeTerminationError = process.terminationError
         
-        stdErr.yieldValueAndClose { stdErrData in
-          stdOut.yieldValueAndClose { stdOutData in
-            continuation.resume(returning: (stdOutData,
-                                            stdErrData,
-                                            maybeTerminationError))
-          }
-        }
+        let stdErrData = stdErr.yieldValueAndClose()
+        let stdOutData = stdOut.yieldValueAndClose()
+
+
+        continuation.resume(returning: (stdOutData,
+                                        stdErrData,
+                                        maybeTerminationError))
       }
       
       do {

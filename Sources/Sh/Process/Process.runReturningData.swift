@@ -30,16 +30,15 @@ extension Process {
         if let terminationError = process.terminationError {
           continuation.resume(throwing: terminationError)
         } else {
-          stdOut.yieldValueAndClose { data in
-            continuation.resume(returning: data)
-          }
+          let data = stdOut.yieldValueAndClose()
+          continuation.resume(returning: data)
         }
       }
       
       do {
         try self.run()
       } catch {
-        continuation.resume(with: .failure(error))
+        continuation.resume(throwing: error)
       }
     }
   }

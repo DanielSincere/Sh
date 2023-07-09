@@ -13,8 +13,13 @@ class PipeBuffer {
     self.init(label: id.rawValue)
   }
   
-  init(label: String) {
-    self.queue = DispatchQueue(label: label)
+  init(label: String, qos: DispatchQoS.QoSClass = .userInitiated) {
+
+    self.queue = DispatchQueue(
+      label: label,
+      target: DispatchQueue.global(qos: qos)
+    )
+
     pipe.fileHandleForReading.readabilityHandler = { handler in
       let nextData = handler.availableData
       self.buffer.append(nextData)
@@ -22,18 +27,22 @@ class PipeBuffer {
   }
   
   func append(_ more: Data) {
-    queue.sync {
+    queue.async {
       self.buffer.append(contentsOf: more)
     }
   }
   
-  func yieldValueAndClose(block: @escaping (Data) -> Void) {
-    queue.sync {
-      let value = self.buffer
-      block(value)
-      pipe.fileHandleForReading.readabilityHandler = nil
-      buffer = Data()
+  func yieldValueAndClose() -> Data {
+
+    let value = queue.sync {
+      self.buffer
     }
+    self.buffer = Data()
+    self.pipe.fileHandleForReading.readabilityHandler = nil
+//    self.pipe.fileHandleForWriting.writeabilityHandler = nil
+
+    return value
+
   }
   
   var unsafeValue: Data {
