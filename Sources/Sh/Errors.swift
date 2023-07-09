@@ -8,9 +8,7 @@ public enum Errors: Error, LocalizedError {
     switch self {
     case .errorWithLogInfo(let logInfo, underlyingError: let underlyingError):
       return """
-        An error occurred: \(underlyingError.localizedDescription)
-
-        Here is the contents of the log file:
+        An error occurred: \(underlyingError.localizedDescription). Here is the contents of the log file:
 
         \(logInfo)
         """
