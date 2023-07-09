@@ -25,7 +25,7 @@ final class LogFileTests: XCTestCase {
        let terminationError = try XCTUnwrap(underlyingError as? TerminationError)
 
        XCTAssertNotEqual(terminationError.status, 0)
-       XCTAssertEqual(terminationError.reason, "`regular exit`")
+       XCTAssertEqual(terminationError.reason, .exit)
 
        let error = Errors.errorWithLogInfo(logInfo, underlyingError: underlyingError)
        XCTAssertTrue(error.localizedDescription.contains("/unknown/path/name"))
@@ -47,7 +47,7 @@ final class LogFileTests: XCTestCase {
       let terminationError = try XCTUnwrap(underlyingError as? TerminationError)
 
       XCTAssertNotEqual(terminationError.status, 0)
-      XCTAssertEqual(terminationError.reason, "`regular exit`")
+      XCTAssertEqual(terminationError.reason, .exit)
 
       let error = Errors.errorWithLogInfo(logInfo, underlyingError: underlyingError)
       XCTAssertTrue(error.localizedDescription.contains(#"XCTAssertEqual failed: ("Some name") is not equal to ("Wrong name")"#))
@@ -63,7 +63,7 @@ final class LogFileTests: XCTestCase {
       try sh(.file("/tmp/missing/path/sh-test.log"), #"echo "simple" > /unknown/path/name"#)
     } catch Errors.errorWithLogInfo(let info, underlyingError: let underlyingError) {
       XCTAssertEqual(info, "/bin/sh: /unknown/path/name: No such file or directory")
-      XCTAssertEqual(underlyingError.localizedDescription, "Ended with status 1 with reason: `regular exit`")
+      XCTAssertEqual(underlyingError.localizedDescription, "Exited with code 1.")
     } catch {
       XCTFail("Expected an errorWithLogInfo, but got \(error)")
     }
@@ -74,7 +74,7 @@ final class LogFileTests: XCTestCase {
       try sh(.file("/missing/path/sh-test.log"), #"echo "simple" > /unknown/path/name"#)
     } catch Errors.openingLogError(let logError, underlyingError: let underlyingError) {
 
-      XCTAssertEqual(logError.localizedDescription, "Ended with status 1 with reason: `regular exit`")
+      XCTAssertEqual(logError.localizedDescription, "Exited with code 1.")
       XCTAssertEqual(underlyingError.localizedDescription, "You can’t save the file “path” because the volume is read only.")
     } catch {
       XCTFail("Expected an opening log error, but got \(error)")

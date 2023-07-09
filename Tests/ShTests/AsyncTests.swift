@@ -44,7 +44,7 @@ final class AsyncTests: XCTestCase {
       let terminationError = try XCTUnwrap(underlyingError as? TerminationError)
 
       XCTAssertNotEqual(terminationError.status, 0)
-      XCTAssertEqual(terminationError.reason, "`regular exit`")
+      XCTAssertEqual(terminationError.reason, .exit)
 
       let error = Errors.errorWithLogInfo(logInfo, underlyingError: underlyingError)
       XCTAssertTrue(error.localizedDescription.contains(#"XCTAssertEqual failed: ("Some name") is not equal to ("Wrong name")"#))

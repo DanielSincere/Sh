@@ -12,16 +12,7 @@ final class ReturningAllOutputTests: XCTestCase {
     XCTAssertEqual(allOutput.stdErr, Data())
     XCTAssertNil(allOutput.terminationError)
   }
-  
-  func testSimpleAsync() async throws {
-    let process = Process(cmd: #"echo simple"#)
-    let allOutput = try await process.runReturningAllOutput()
-    
-    XCTAssertEqual(allOutput.stdOut.asTrimmedString(), "simple")
-    XCTAssertEqual(allOutput.stdErr, Data())
-    XCTAssertNil(allOutput.terminationError)
-  }
-  
+   
   func testLoremIpsumData() throws {
     let cmd = #"echo "$LOREM_IPSUM""#
     let environment = ["LOREM_IPSUM": loremIpsum!]

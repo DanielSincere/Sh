@@ -12,30 +12,41 @@ extension Process {
 
 public struct TerminationError: Error, LocalizedError {
   public let status: Int32
-  public let reason: String
+  public let reason: Reason
+
+  public enum Reason {
+    case exit, uncaughtSignal, unknownDefault
+  }
   
   public var errorDescription: String? {
-    "Ended with status \(status) with reason: \(reason)"
+    switch reason {
+    case .exit:
+      return "Exited with code \(status)."
+    case .uncaughtSignal:
+      return "Uncaught signal, exited with code \(status)."
+    case .unknownDefault:
+      return "Unknown termination reason, exited with code \(status)."
+    }
   }
 }
 
 private extension TerminationError {
   init(process: Process) {
     self.status = process.terminationStatus
-    self.reason = process.terminationReason.errorDescription
+    self.reason = process.terminationReason.reason
   }
 }
 
 private extension Process.TerminationReason {
-  var errorDescription: String {
+  var reason: TerminationError.Reason {
     switch self {
     case .exit:
-      return "`regular exit`"
+      return .exit
     case .uncaughtSignal:
-      return "`uncaught signal`"
+      return .uncaughtSignal
 #if !os(Linux)
     @unknown default:
-      return "`unknown default Process.TerminationReason`"
+      return .unknownDefault
 #endif
     }
   }

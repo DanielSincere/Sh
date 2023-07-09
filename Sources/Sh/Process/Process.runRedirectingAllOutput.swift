@@ -1,5 +1,10 @@
 import Foundation
+
+#if os(Linux)
+import SystemPackage
+#else
 import System
+#endif
 
 extension Process {
   
