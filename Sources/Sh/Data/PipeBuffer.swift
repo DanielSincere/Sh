@@ -22,7 +22,7 @@ class PipeBuffer {
 
     pipe.fileHandleForReading.readabilityHandler = { handler in
       let nextData = handler.availableData
-      self.buffer.append(nextData)
+      self.append(nextData)
     }
   }
   
@@ -32,20 +32,15 @@ class PipeBuffer {
     }
   }
   
-  func yieldValueAndClose() -> Data {
+  func closeReturningData() -> Data {
 
     let value = queue.sync {
       self.buffer
     }
+    
     self.buffer = Data()
     self.pipe.fileHandleForReading.readabilityHandler = nil
-//    self.pipe.fileHandleForWriting.writeabilityHandler = nil
 
     return value
-
-  }
-  
-  var unsafeValue: Data {
-    buffer
   }
 }
