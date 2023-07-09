@@ -62,8 +62,13 @@ final class LogFileTests: XCTestCase {
     do {
       try sh(.file("/tmp/missing/path/sh-test.log"), #"echo "simple" > /unknown/path/name"#)
     } catch Errors.errorWithLogInfo(let info, underlyingError: let underlyingError) {
+      #if os(Linux)
+      XCTAssertEqual(info, "/bin/sh: 1: cannot create /unknown/path/name: Directory nonexistent")
+      XCTAssertEqual(underlyingError.localizedDescription, "Exited with code 2.")
+      #else
       XCTAssertEqual(info, "/bin/sh: /unknown/path/name: No such file or directory")
       XCTAssertEqual(underlyingError.localizedDescription, "Exited with code 1.")
+      #endif
     } catch {
       XCTFail("Expected an errorWithLogInfo, but got \(error)")
     }
@@ -75,7 +80,11 @@ final class LogFileTests: XCTestCase {
     } catch Errors.openingLogError(let logError, underlyingError: let underlyingError) {
 
       XCTAssertEqual(logError.localizedDescription, "Exited with code 1.")
+      #if os(Linux)
+      XCTAssertEqual(underlyingError.localizedDescription, "The operation could not be completed. You don’t have permission.")
+      #else
       XCTAssertEqual(underlyingError.localizedDescription, "You can’t save the file “path” because the volume is read only.")
+      #endif
     } catch {
       XCTFail("Expected an opening log error, but got \(error)")
     }
