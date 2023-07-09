@@ -2,8 +2,6 @@ import Foundation
 import XCTest
 @testable import Sh
 
-// These are having issues running in the full suite of tests?
-
 final class AsyncTests: XCTestCase {
 
   func testSimpleAsync() async throws {
@@ -31,5 +29,27 @@ final class AsyncTests: XCTestCase {
     XCTAssertEqual(events.first?.date.timeIntervalSince1970, 1667071342)
     XCTAssertEqual(events.last?.type, "stop")
     XCTAssertEqual(events.last?.date.timeIntervalSince1970, 1698607342)
+  }
+
+  func testPrintingErrorWhenFileOutputIsLong() throws {
+    do {
+      try sh(.file("/tmp/sh-test.log"), """
+      swift test --package-path Fixtures/SwiftProjectWithFailingTests
+      """)
+      XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`")
+    } catch Errors.errorWithLogInfo(let logInfo, underlyingError: let underlyingError) {
+
+      XCTAssertTrue(logInfo.contains(#"XCTAssertEqual failed: ("Some name") is not equal to ("Wrong name")"#))
+
+      let terminationError = try XCTUnwrap(underlyingError as? TerminationError)
+
+      XCTAssertNotEqual(terminationError.status, 0)
+      XCTAssertEqual(terminationError.reason, "`regular exit`")
+
+      let error = Errors.errorWithLogInfo(logInfo, underlyingError: underlyingError)
+      XCTAssertTrue(error.localizedDescription.contains(#"XCTAssertEqual failed: ("Some name") is not equal to ("Wrong name")"#))
+    } catch {
+      XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`, instead got an \(error)")
+    }
   }
 }

@@ -107,8 +107,10 @@ public func sh(_ sink: Sink,
       let underlyingError = error
 
       let logResult = Result {
-        try String(contentsOfFile: path)
-          .trimmingCharacters(in: .whitespacesAndNewlines)
+        let lastFewLines = try sh("tail -n 10 \(path)")?
+          .trimmingCharacters(in: .whitespacesAndNewlines) ?? "<no content in log file>"
+
+        return lastFewLines
       }
 
       switch logResult {
