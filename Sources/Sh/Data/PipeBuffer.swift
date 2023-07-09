@@ -20,7 +20,7 @@ class PipeBuffer {
       target: DispatchQueue.global(qos: qos)
     )
 
-    pipe.fileHandleForReading.readabilityHandler = { handler in
+    self.pipe.fileHandleForReading.readabilityHandler = { handler in
       let nextData = handler.availableData
       self.append(nextData)
     }
@@ -34,12 +34,13 @@ class PipeBuffer {
   
   func closeReturningData() -> Data {
 
+    self.pipe.fileHandleForReading.readabilityHandler = nil
+
     let value = queue.sync {
       self.buffer
     }
-    
+
     self.buffer = Data()
-    self.pipe.fileHandleForReading.readabilityHandler = nil
 
     return value
   }
