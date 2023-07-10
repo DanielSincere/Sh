@@ -24,7 +24,10 @@ class PipeBuffer {
   func closeReturningData() -> Data {
     self.semaphore.wait()
 
-    let data = self.buffer
+    self.pipe.fileHandleForReading.readabilityHandler = nil
+    let remainingData = try! self.pipe.fileHandleForReading.readToEnd() ?? Data()
+
+    let data = self.buffer + remainingData
     self.buffer = Data()
     self.pipe.fileHandleForReading.readabilityHandler = nil
     return data
