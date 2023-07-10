@@ -11,7 +11,12 @@ let package = Package(
     .package(
       url: "https://github.com/apple/swift-argument-parser",
       from: "1.2.0"),
-
+    .package(
+      url: "https://github.com/apple/swift-markdown",
+      from: "0.2.0"),
+    .package(
+      url: "https://github.com/apple/swift-http-types",
+      from: "0.1.0"),
   ],
   targets: [
     .target(
