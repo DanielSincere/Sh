@@ -37,6 +37,28 @@ final class LogFileTests: XCTestCase {
     }
   }
   
+  func testPrintingErrorWhenFileOutputIsLong() throws {
+    do {
+      try sh(.file("/tmp/sh-LogFileTests.testPrintingErrorWhenFileOutputIsLong.log"), """
+      swift test --package-path Fixtures/SwiftProjectWithFailingTests
+      """)
+      XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`")
+    } catch Errors.errorWithLogInfo(let logInfo, underlyingError: let underlyingError) {
+
+      XCTAssertTrue(logInfo.contains(#"XCTAssertEqual failed: ("Some name") is not equal to ("Wrong name")"#))
+
+      let terminationError = try XCTUnwrap(underlyingError as? TerminationError)
+
+      XCTAssertNotEqual(terminationError.status, 0)
+      XCTAssertEqual(terminationError.reason, .exit)
+
+      let error = Errors.errorWithLogInfo(logInfo, underlyingError: underlyingError)
+      XCTAssertTrue(error.localizedDescription.contains(#"XCTAssertEqual failed: ("Some name") is not equal to ("Wrong name")"#))
+    } catch {
+      XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`, instead got an \(error)")
+    }
+  }
+
   func testCreatesMissingLogfiles() throws {
     
     do {

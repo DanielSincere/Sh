@@ -13,11 +13,11 @@ final class AsyncTests: XCTestCase {
     XCTAssertNil(allOutput.terminationError)
   }
 
-  func testPrintingErrorWhenFileOutputIsLong() throws {
+  func testPrintingErrorWhenFileOutputIsLongAsync() async throws {
     do {
-      try sh(.file("/tmp/sh-AsyncTests.testPrintingErrorWhenFileOutputIsLong.log"), """
-      swift test --package-path Fixtures/SwiftProjectWithFailingTests
-      """)
+      try await sh(.file("/tmp/sh-AsyncTests.testPrintingErrorWhenFileOutputIsLong.log"),
+                   "swift test --package-path Fixtures/SwiftProjectWithFailingTests")
+      
       XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`")
     } catch Errors.errorWithLogInfo(let logInfo, underlyingError: let underlyingError) {
 

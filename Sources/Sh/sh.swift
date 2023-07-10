@@ -137,6 +137,33 @@ public func sh(_ sink: Sink,
     await announce("Running `\(cmd)`")
   case .file(let path):
     await announce("Running `\(cmd)`, logging to `\(path.blue)`")
+    do {
+      try await shq(sink, cmd, environment: environment, workingDirectory: workingDirectory)
+    } catch {
+      let underlyingError = error
+
+      let logResult: Result<String, Error> = await {
+        do {
+          let lastFewLines = try await sh("tail -n 10 \(path)")?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+          guard let lastFewLines, !lastFewLines.isEmpty else {
+            return .success("<no content in log file>")
+          }
+
+          return .success(lastFewLines)
+        } catch {
+          return .failure(error)
+        }
+      }()
+
+      switch logResult {
+      case .success(let success):
+        throw Errors.errorWithLogInfo(success, underlyingError: underlyingError)
+      case .failure(let failure):
+        throw Errors.openingLogError(failure, underlyingError: underlyingError)
+      }
+    }
   case .split(let out, let err):
     await announce("Running `\(cmd)`, output to `\(out.blue)`, error to `\(err.blue)`")
   case .null:
