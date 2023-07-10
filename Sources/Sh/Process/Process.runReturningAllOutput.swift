@@ -19,9 +19,10 @@ extension Process {
     try self.run()
     self.waitUntilExit()
 
-    return AllOutput(stdOut: try stdOut.closeReturningData(),
-            stdErr: try stdErr.closeReturningData(),
-            terminationError: terminationError)
+    return AllOutput(
+      stdOut: stdOut.closeReturningData(),
+      stdErr: stdErr.closeReturningData(),
+      terminationError: terminationError)
   }
   
   public func runReturningAllOutput() async throws -> AllOutput {
@@ -35,15 +36,10 @@ extension Process {
     return try await withCheckedThrowingContinuation  { (continuation: CheckedContinuation<AllOutput, Error>) in
       
       self.terminationHandler = { process in
-        let maybeTerminationError = process.terminationError
-        
-        let stdErrData = try! stdErr.closeReturningData()
-        let stdOutData = try! stdOut.closeReturningData()
-
-
-        continuation.resume(returning: AllOutput(stdOut: stdOutData,
-                                                 stdErr: stdErrData,
-                                                 terminationError: maybeTerminationError))
+        continuation.resume(returning: AllOutput(
+          stdOut: stdOut.closeReturningData(),
+          stdErr: stdErr.closeReturningData(),
+          terminationError: process.terminationError))
       }
       
       do {

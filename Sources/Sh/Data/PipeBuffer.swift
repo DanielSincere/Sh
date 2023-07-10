@@ -29,13 +29,13 @@ class PipeBuffer {
   }
 
   func closeReturningData() -> Data {
-    let value = queue.sync {
+    let data = queue.sync {
       self.buffer
     }
 
     self.pipe.fileHandleForReading.readabilityHandler = nil
     self.buffer = Data()
 
-    return value
+    return data
   }
 }
