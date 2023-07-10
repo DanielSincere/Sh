@@ -33,7 +33,7 @@ final class AsyncTests: XCTestCase {
 
   func testPrintingErrorWhenFileOutputIsLong() throws {
     do {
-      try sh(.file("/tmp/sh-test.log"), """
+      try sh(.file("/tmp/sh-AsyncTests.testPrintingErrorWhenFileOutputIsLong.log"), """
       swift test --package-path Fixtures/SwiftProjectWithFailingTests
       """)
       XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`")

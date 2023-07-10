@@ -36,7 +36,7 @@ class PipeBuffer {
   func closeReturningData() -> Data {
 
     let data = queue.sync {
-      self.semaphore.wait()
+      _ = self.semaphore.wait(timeout: .now() + 2)
       return self.buffer
     }
 
