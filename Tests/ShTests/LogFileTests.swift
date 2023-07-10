@@ -5,18 +5,21 @@ import Foundation
 final class LogFileTests: XCTestCase {
 
   func testSimple() throws {
-    try sh(.file("/tmp/sh-LogFileTests.testSimple.log"), #"echo "simple""#)
+    try sh(.file("/tmp/sh-LogFileTests.testSimple.log"),
+           #"echo "simple""#)
     XCTAssertEqual(try String(contentsOfFile: "/tmp/sh-LogFileTests.testSimple.log"), "simple\n")
   }
 
   func testSimpleAsync() async throws {
-    try await sh(.file("/tmp/sh-LogFileTests.testSimpleAsync.log"), #"echo "simple""#)
+    try await sh(.file("/tmp/sh-LogFileTests.testSimpleAsync.log"),
+                 #"echo "simple""#)
     XCTAssertEqual(try String(contentsOfFile: "/tmp/sh-LogFileTests.testSimpleAsync.log"), "simple\n")
   }
 
    func testPrintingErrorWhenFileOutputIsShort() throws {
      do {
-       try sh(.file("/tmp/sh-LogFileTests.testPrintingErrorWhenFileOutputIsShort.log"), #"echo "simple" > /unknown/path/name"#)
+       try sh(.file("/tmp/sh-LogFileTests.testPrintingErrorWhenFileOutputIsShort.log"),
+              #"echo "simple" > /unknown/path/name"#)
        XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`")
      } catch Errors.errorWithLogInfo(let logInfo, underlyingError: let underlyingError) {
 
@@ -36,9 +39,8 @@ final class LogFileTests: XCTestCase {
 
   func testPrintingErrorWhenFileOutputIsLong() throws {
     do {
-      try sh(.file("/tmp/sh-LogFileTests.testPrintingErrorWhenFileOutputIsLong.log"), """
-      swift test --package-path Fixtures/SwiftProjectWithFailingTests
-      """)
+      try sh(.file("/tmp/sh-LogFileTests.testPrintingErrorWhenFileOutputIsLong.log"),
+             "swift test --package-path Fixtures/SwiftProjectWithFailingTests")
       XCTFail("Expected the above to throw an `Errors.errorWithLogInfo`")
     } catch Errors.errorWithLogInfo(let logInfo, underlyingError: let underlyingError) {
 
@@ -60,7 +62,8 @@ final class LogFileTests: XCTestCase {
   func testCreatesMissingLogfiles() throws {
 
     do {
-      try sh(.file("/tmp/missing/path/sh-testCreatesMissingLogfiles.log"), #"echo "simple" > /unknown/path/name"#)
+      try sh(.file("/tmp/missing/path/sh-testCreatesMissingLogfiles.log"),
+             #"echo "simple" > /unknown/path/name"#)
     } catch Errors.errorWithLogInfo(let info, underlyingError: let underlyingError) {
       #if os(Linux)
       XCTAssertEqual(info, "/bin/sh: 1: cannot create /unknown/path/name: Directory nonexistent")
@@ -76,7 +79,8 @@ final class LogFileTests: XCTestCase {
 
   func testUnwritableLogfile() throws {
     do {
-      try sh(.file("/missing/path/sh-test.log"), #"echo "simple" > /unknown/path/name"#)
+      try sh(.file("/missing/path/sh-test.log"),
+             #"echo "simple" > /unknown/path/name"#)
     } catch Errors.openingLogError(let logError, underlyingError: let underlyingError) {
 
       XCTAssertEqual(logError.localizedDescription, "Exited with code 1.")
