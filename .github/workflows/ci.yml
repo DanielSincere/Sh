@@ -13,12 +13,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-12
-            swift: "5.7"
-          - os: macos-13
-            swift: "5.7"
-          - os: ubuntu-latest
-            swift: "5.7"
           - os: macos-13
             swift: "5.8"
           - os: macos-12
