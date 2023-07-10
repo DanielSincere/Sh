@@ -6,12 +6,12 @@ final class LogFileTests: XCTestCase {
 
   func testSimple() throws {
     try sh(.file("/tmp/sh-LogFileTests.testSimple.log"), #"echo "simple""#)
-    XCTAssertEqual(try String(contentsOfFile: "/tmp/sh-test.log"), "simple\n")
+    XCTAssertEqual(try String(contentsOfFile: "/tmp/sh-LogFileTests.testSimple.log"), "simple\n")
   }
 
   func testSimpleAsync() async throws {
     try await sh(.file("/tmp/sh-LogFileTests.testSimpleAsync.log"), #"echo "simple""#)
-    XCTAssertEqual(try String(contentsOfFile: "/tmp/sh-test.log"), "simple\n")
+    XCTAssertEqual(try String(contentsOfFile: "/tmp/sh-LogFileTests.testSimpleAsync.log"), "simple\n")
   }
 
    func testPrintingErrorWhenFileOutputIsShort() throws {
