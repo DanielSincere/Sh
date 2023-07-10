@@ -25,24 +25,26 @@ class PipeBuffer {
     self.pipe.fileHandleForReading.readabilityHandler = { handler in
       self.semaphore.enter()
       self.queue.async {
-
-        let data = try! handler.readToEnd()
-        self.buffer.append(contentsOf: data ?? Data())
+        let data = handler.availableData
+        self.buffer.append(contentsOf: data)
         self.semaphore.leave()
       }
     }
   }
 
   func closeReturningData() -> Data {
-
-    let data = queue.sync {
-      _ = self.semaphore.wait(timeout: .now() + 2)
-      return self.buffer
+    queue.sync {
+      let result = self.semaphore.wait(timeout: .now() + 0.1)
+      switch result {
+      case .success:
+        print("SUCCESS")
+      case .timedOut:
+        print("TIME OUT")
+      }
+      self.pipe.fileHandleForReading.readabilityHandler = nil
+      let data = self.buffer
+      self.buffer = Data()
+      return data
     }
-
-    self.pipe.fileHandleForReading.readabilityHandler = nil
-    self.buffer = Data()
-
-    return data
   }
 }
