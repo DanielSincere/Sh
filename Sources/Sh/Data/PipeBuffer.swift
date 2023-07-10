@@ -29,7 +29,6 @@ class PipeBuffer {
 
     let data = self.buffer + remainingData
     self.buffer = Data()
-    self.pipe.fileHandleForReading.readabilityHandler = nil
     return data
   }
 }
