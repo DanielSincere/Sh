@@ -23,9 +23,9 @@ class PipeBuffer {
     )
 
     self.pipe.fileHandleForReading.readabilityHandler = { handler in
-
+      self.semaphore.enter()
       self.queue.async {
-        self.semaphore.enter()
+
         let data = try! handler.readToEnd()
         self.buffer.append(contentsOf: data ?? Data())
         self.semaphore.leave()
