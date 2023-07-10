@@ -7,37 +7,27 @@ class PipeBuffer {
   
   let pipe = Pipe()
   private var buffer: Data = .init()
-  private let queue: DispatchQueue
-  
+
   convenience init(id: StreamID) {
     self.init(label: id.rawValue)
   }
   
-  init(label: String, qos: DispatchQoS.QoSClass = .userInitiated) {
-
-    self.queue = DispatchQueue(
-      label: label,
-      target: DispatchQueue.global(qos: qos)
-    )
-
-    self.pipe.fileHandleForReading.readabilityHandler = { handler in
-      let data = handler.availableData
-      self.append(data: data)
-    }
-  }
-
-  func append(data: Data) {
-    self.queue.async {
+  init(label: String) {
+    self.pipe.fileHandleForReading.readabilityHandler = { handle in
+      let data = handle.availableData
       self.buffer.append(contentsOf: data)
     }
   }
 
-  func closeReturningData() -> Data {
-    let value = queue.sync {
-      self.buffer
-    }
 
+  func closeReturningData() throws -> Data {
+
+    var value = self.buffer
     self.pipe.fileHandleForReading.readabilityHandler = nil
+    let data = try self.pipe.fileHandleForReading.readToEnd() ?? Data()
+
+    value.append(data)
+
     self.buffer = Data()
 
     return value

@@ -15,7 +15,7 @@ extension Process {
     if let terminationError = terminationError {
       throw terminationError
     } else {
-      return stdOut.closeReturningData()
+      return try stdOut.closeReturningData()
     }
   }
     
@@ -30,8 +30,12 @@ extension Process {
         if let terminationError = process.terminationError {
           continuation.resume(throwing: terminationError)
         } else {
-          let data = stdOut.closeReturningData()
-          continuation.resume(returning: data)
+          do {
+            let data = try stdOut.closeReturningData()
+            continuation.resume(returning: data)
+          } catch {
+            continuation.resume(throwing: error)
+          }
         }
       }
       
