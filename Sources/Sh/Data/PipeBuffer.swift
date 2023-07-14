@@ -5,41 +5,30 @@ class PipeBuffer {
     case stdOut, stdErr
   }
   
-  let pipe = Pipe()
+  internal let pipe = Pipe()
   private var buffer: Data = .init()
-  private let queue: DispatchQueue
-  
-  convenience init(id: StreamID) {
-    self.init(label: id.rawValue)
-  }
-  
-  init(label: String) {
-    self.queue = DispatchQueue(label: label)
-    pipe.fileHandleForReading.readabilityHandler = { handler in
-      let nextData = handler.availableData
-      self.buffer.append(nextData)
-    }
-  }
-  
-  func append(_ more: Data) {
-    queue.async {
-      self.buffer.append(contentsOf: more)
-    }
-  }
-  
-  func yieldValue(block: @escaping (Data) -> Void) {
-    queue.sync {
-      let value = self.buffer
-      block(value)
-      cleanup()
+  private let semaphore = DispatchGroup()
+
+  let id: StreamID
+  init(id: StreamID) {
+    self.id = id
+
+    self.pipe.fileHandleForReading.readabilityHandler = { handler in
+      self.semaphore.enter()
+      let data = handler.availableData
+      self.buffer.append(contentsOf: data)
+      self.semaphore.leave()
     }
   }
 
-  func cleanup() {
-    pipe.fileHandleForReading.readabilityHandler = nil
-  }
-  
-  var unsafeValue: Data {
-    buffer
+  func closeReturningData() -> Data {
+    self.semaphore.wait()
+
+    self.pipe.fileHandleForReading.readabilityHandler = nil
+    let remainingData = try! self.pipe.fileHandleForReading.readToEnd() ?? Data()
+
+    let data = self.buffer + remainingData
+    self.buffer = Data()
+    return data
   }
 }

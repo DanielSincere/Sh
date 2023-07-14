@@ -57,12 +57,13 @@ public func shq<D: Decodable>(_ type: D.Type,
                               decodedBy jsonDecoder: JSONDecoder = .init(),
                               _ cmd: String,
                              environment: [String: String] = [:],
-                             workingDirectory: String? = nil) async throws -> D {
-  try await Process(cmd: cmd,
-                    environment: environment,
-                    workingDirectory: workingDirectory)
-  .runReturningData()
-  .asJSON(decoding: type, using: jsonDecoder)
+                              workingDirectory: String? = nil) async throws -> D {
+  let data = try await Process(
+    cmd: cmd,
+    environment: environment,
+    workingDirectory: workingDirectory)
+    .runReturningData()
+  return try data.asJSON(decoding: type, using: jsonDecoder)
 }
 
 /// Run a shell command, sending output to the terminal or a file.

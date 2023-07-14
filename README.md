@@ -35,10 +35,10 @@ Here is a simple example, where we ask the shell for the date, formatted as seco
     
 Supposing this was in a script named `Date`, a shell session might look like this:
 
-     % swish Date
-    [Sh] Running `swift package --package-path Swish dump-package`, decoding `SwiftPackageDump`
-    [Swish] Running target named `Date`
-    [Sh] Running `swift run --package-path Swish Date `
+     % spx Date
+    [Sh] Running `swift package --package-path SPX dump-package`, decoding `SwiftPackageDump`
+    [SPX] Running target named `Date`
+    [Sh] Running `swift run --package-path SPX Date `
     Fetching https://github.com/FullQueueDeveloper/Sh.git from cache
     Fetched https://github.com/FullQueueDeveloper/Sh.git (0.24s)
     Computing version for https://github.com/FullQueueDeveloper/Sh.git
@@ -60,10 +60,10 @@ Supposing this was in a script named `Date`, a shell session might look like thi
     
 And if all the package have resolved, a shell session might look like this:
 
-     % swish Date
-    [Sh] Running `swift package --package-path Swish dump-package`, decoding `SwiftPackageDump`
-    [Swish] Running target named `Date`
-    [Sh] Running `swift run --package-path Swish Date `
+     % spx Date
+    [Sh] Running `swift package --package-path SPX dump-package`, decoding `SwiftPackageDump`
+    [SPX] Running target named `Date`
+    [Sh] Running `swift run --package-path SPX Date `
     Building for debugging...
     Build complete! (0.08s)
     [Sh] Running `date +%s`, decoding `Double`
@@ -129,3 +129,7 @@ This package by itself does not try to provide a domain specific language for va
 - [ShXcrun](https://github.com/FullQueueDeveloper/ShXcrun) for a Sh wrapper around tools shipped with Xcode such as `xcodebuild` and `altool`.
 - [ShGit](https://github.com/FullQueueDeveloper/ShGit) for a Sh wrapper around Git.
 - [Sh1Password](https://github.com/FullQueueDeveloper/Sh1Password) for a Sh wrapper around 1Password's CLI version 2.
+
+## About the author
+
+Follow Full Queue Developer on [Twitch](https://twitch.tv/FullQueueDeveloper) for live coding, [Discord](http://FullQueueDeveloper.com/discord) for hanging out, and [Mastodon](https://mastodon.online/@FullQueueDeveloper) for updates. If this library helps you out, you can [sponsor on GitHub](https://github.com/sponsors/FullQueueDeveloper).

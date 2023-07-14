@@ -2,9 +2,11 @@ import Foundation
 
 extension Process {
   
-  public typealias AllOutput = (stdOut: Data,
-                                stdErr: Data,
-                                terminationError: TerminationError?)
+  public struct AllOutput {
+    public let stdOut: Data,
+        stdErr: Data,
+        terminationError: TerminationError?
+  }
   
   public func runReturningAllOutput() throws -> AllOutput {
         
@@ -16,10 +18,11 @@ extension Process {
     
     try self.run()
     self.waitUntilExit()
-    
-    return (stdOut: stdOut.unsafeValue,
-            stdErr: stdErr.unsafeValue,
-            terminationError: terminationError)
+
+    return AllOutput(
+      stdOut: stdOut.closeReturningData(),
+      stdErr: stdErr.closeReturningData(),
+      terminationError: terminationError)
   }
   
   public func runReturningAllOutput() async throws -> AllOutput {
@@ -33,15 +36,10 @@ extension Process {
     return try await withCheckedThrowingContinuation  { (continuation: CheckedContinuation<AllOutput, Error>) in
       
       self.terminationHandler = { process in
-        let maybeTerminationError = process.terminationError
-        
-        stdErr.yieldValue { stdErrData in
-          stdOut.yieldValue { stdOutData in
-            continuation.resume(returning: (stdOutData,
-                                            stdErrData,
-                                            maybeTerminationError))
-          }
-        }
+        continuation.resume(returning: AllOutput(
+          stdOut: stdOut.closeReturningData(),
+          stdErr: stdErr.closeReturningData(),
+          terminationError: process.terminationError))
       }
       
       do {

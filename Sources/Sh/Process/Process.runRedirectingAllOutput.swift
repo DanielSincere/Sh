@@ -1,5 +1,11 @@
 import Foundation
 
+#if os(Linux)
+import SystemPackage
+#else
+import System
+#endif
+
 extension Process {
   
   public func runRedirectingAllOutput(to sink: Sink) throws {
@@ -60,6 +66,8 @@ extension Process {
   }
   
   private func createFile(atPath path: String) throws -> FileHandle {
+    let directories = FilePath(path).lexicallyNormalized().removingLastComponent()
+    try FileManager.default.createDirectory(atPath: directories.string, withIntermediateDirectories: true)
     guard FileManager.default.createFile(atPath: path, contents: Data()) else {
       struct CouldNotCreateFile: Error {
         let path: String

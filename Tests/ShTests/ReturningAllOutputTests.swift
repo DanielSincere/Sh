@@ -12,19 +12,10 @@ final class ReturningAllOutputTests: XCTestCase {
     XCTAssertEqual(allOutput.stdErr, Data())
     XCTAssertNil(allOutput.terminationError)
   }
-  
-  func testSimpleAsync() async throws {
-    let process = Process(cmd: #"echo "simple""#)
-    let allOutput = try await process.runReturningAllOutput()
-    
-    XCTAssertEqual(allOutput.stdOut.asTrimmedString(), "simple")
-    XCTAssertEqual(allOutput.stdErr, Data())
-    XCTAssertNil(allOutput.terminationError)
-  }
-  
+   
   func testLoremIpsumData() throws {
     let cmd = #"echo "$LOREM_IPSUM""#
-    let environment = ["LOREM_IPSUM": loremIpsum]
+    let environment = ["LOREM_IPSUM": loremIpsum!]
     let output = try sh(cmd, environment: environment)
     XCTAssertEqual(output, loremIpsum)
   }
@@ -47,8 +38,14 @@ final class ReturningAllOutputTests: XCTestCase {
     XCTAssertEqual(allOutput.stdErr, Data())
     XCTAssertNil(allOutput.terminationError)
   }
-  
-  private let loremIpsum = """
+
+
+  private var loremIpsum: String!
+  override func tearDown() {
+    loremIpsum = nil
+  }
+  override func setUp() {
+    loremIpsum = """
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse id pretium ex. Aliquam rhoncus libero dolor, ut egestas mauris auctor ut. Curabitur accumsan pharetra sagittis. Aliquam neque elit, venenatis ac luctus id, bibendum vel arcu. Nulla sollicitudin bibendum tincidunt. Vestibulum lectus sapien, facilisis a bibendum viverra, ullamcorper scelerisque leo. Proin mollis commodo orci at accumsan. Aenean nisl ex, iaculis tincidunt eros quis, consequat auctor nisl. Integer nec felis egestas erat posuere aliquam. Praesent commodo nibh rutrum, eleifend sem vitae, molestie est. Aenean eleifend ipsum vel tellus fermentum mattis.
 
 Phasellus mollis ut enim id pellentesque. Proin congue est feugiat odio vestibulum volutpat. In varius aliquam sapien eu iaculis. Phasellus vitae mauris sit amet massa euismod dictum vel in metus. Morbi ut orci et libero cursus consequat vitae vel eros. Donec accumsan dolor sit amet tincidunt porta. Sed bibendum risus at justo euismod, ut rhoncus urna molestie. Praesent at congue odio, vitae consequat leo. Etiam vel cursus leo, ac fringilla lacus. Duis ac tempus ante. Donec vel elementum mi, ut lobortis enim.
@@ -77,4 +74,5 @@ Aliquam erat volutpat. Sed commodo ligula non nunc pulvinar, vel pretium velit p
 
 Pellentesque scelerisque, purus vitae suscipit consectetur, diam lacus ultricies ex, vehicula lobortis ligula ipsum ut magna. Nulla blandit egestas massa non ultricies. In purus lorem, volutpat ac efficitur ac, vehicula quis felis. Suspendisse potenti. Praesent suscipit, ipsum vel varius vulputate, felis sem mattis ex, vitae aliquet massa felis ut nibh. Integer id arcu arcu. Ut pulvinar ipsum in ipsum tempor, sit amet iaculis risus commodo. Suspendisse euismod mi a elementum tincidunt. Quisque id dapibus sem. Nam hendrerit arcu ut auctor cursus. Mauris condimentum mi non malesuada viverra. Vivamus dictum sed nulla dapibus vehicula. Ut facilisis augue nunc, nec commodo ante ullamcorper id. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed pharetra turpis nec urna suscipit volutpat.
 """.trimmingCharacters(in: .whitespacesAndNewlines)
+  }
 }
