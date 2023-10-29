@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
   name: "SwiftProjectWithFailingTests",
   platforms: [
-    .macOS(.v12),
+    .macOS(.v13),
   ],
   dependencies: [
     .package(

@@ -12,9 +12,10 @@ let package = Package(
   ],
   dependencies: [
     .package(url: "https://github.com/onevcat/Rainbow", from: "4.0.0"),
+    .package(url: "https://github.com/GeorgeLyon/Shwift", from: "2.0.1"),
   ],
   targets: [
-    .target(name: "Sh", dependencies: ["Rainbow"]),
+    .target(name: "Sh", dependencies: ["Rainbow", "Shwift"]),
     .testTarget(name: "ShTests", dependencies: ["Sh"]),
   ])
 

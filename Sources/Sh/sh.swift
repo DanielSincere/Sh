@@ -5,6 +5,7 @@
 
 import Foundation
 import Rainbow
+import Shwift
 
 /// Run a shell command. Useful for obtaining small bits of output
 /// from a shell program

@@ -7,7 +7,7 @@ import System
 #endif
 
 extension Process {
-  
+
   public func runRedirectingAllOutput(to sink: Sink) throws {
     try self.redirectAllOutput(to: sink)
     try self.run()
@@ -41,7 +41,7 @@ extension Process {
       }
     }
   }
-  
+
   private func redirectAllOutput(to sink: Sink) throws {
     switch sink {
     case .terminal:

@@ -21,7 +21,7 @@ extension Process {
     
   public func runReturningData() async throws -> Data {   
     self.standardError = FileHandle.standardError
-    
+
     let stdOut = PipeBuffer(id: .stdOut)
     self.standardOutput = stdOut.pipe
     
